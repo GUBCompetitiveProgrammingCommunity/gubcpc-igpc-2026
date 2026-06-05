@@ -1,0 +1,94 @@
+{
+  "event": {
+    "name": "GUBCPC Intra University Programming Contest 2026",
+    "shortName": "GUBCPC-IUPC 2026",
+    "date": "2026-09-20T09:00:00",
+    "venue": "Green University of Bangladesh, Purbachal Campus",
+    "organizer": "GUB Competitive Programming Community",
+    "university": "Green University of Bangladesh",
+    "tagline": "THINK • CODE • SOLVE",
+    "description": "GUBCPC hosts its annual Intra University Programming Contest, bringing together the brightest minds from Green University of Bangladesh. Compete, collaborate, and conquer algorithmic challenges in this prestigious programming event.",
+    "totalTeams": "100+",
+    "prizePool": "BDT 50,000",
+    "registrationDeadline": "2026-09-10T23:59:00"
+  },
+  "slider": [
+    {
+      "id": 1,
+      "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&q=80",
+      "caption": "Competitive Programming Excellence"
+    },
+    {
+      "id": 2,
+      "image": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&q=80",
+      "caption": "Coding the Future"
+    },
+    {
+      "id": 3,
+      "image": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&q=80",
+      "caption": "Algorithms & Innovation"
+    },
+    {
+      "id": 4,
+      "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80",
+      "caption": "Green University Programming Hub"
+    },
+    {
+      "id": 5,
+      "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&q=80",
+      "caption": "Think. Code. Solve."
+    }
+  ],
+  "about": {
+    "description": "GUB Competitive Programming Community (GUBCPC) is the premier programming club of Green University of Bangladesh. Founded with the mission to foster algorithmic thinking and competitive programming culture among students, we have been nurturing talent since our inception.",
+    "mission": "To create a thriving competitive programming culture at Green University of Bangladesh by providing resources, mentorship, and opportunities for students to excel in algorithmic problem solving.",
+    "vision": "To be recognized as one of the leading competitive programming communities in Bangladesh, producing top-tier programmers who compete at national and international levels.",
+    "stats": [
+      { "label": "Active Members", "value": "200+" },
+      { "label": "Contests Hosted", "value": "15+" },
+      { "label": "ICPC Contestants", "value": "30+" },
+      { "label": "Years Active", "value": "5+" }
+    ],
+    "team": [
+      { "name": "Dr. Mohammad Shafiul Alam", "role": "Faculty Advisor", "dept": "CSE Department" },
+      { "name": "Md. Rafiqul Islam", "role": "President", "dept": "CSE - 4th Year" },
+      { "name": "Tahmina Akter", "role": "Vice President", "dept": "CSE - 4th Year" },
+      { "name": "Sabbir Ahmed", "role": "General Secretary", "dept": "CSE - 3rd Year" },
+      { "name": "Nusrat Jahan", "role": "Treasurer", "dept": "CSE - 3rd Year" },
+      { "name": "Mahmudul Hasan", "role": "Technical Lead", "dept": "CSE - 3rd Year" }
+    ]
+  },
+  "schedule": [
+    {
+      "day": "Day 1 — Registration",
+      "date": "September 19, 2026",
+      "events": [
+        { "time": "09:00 AM", "title": "Registration Opens", "desc": "Participant check-in and team registration at the main auditorium entrance." },
+        { "time": "11:00 AM", "title": "Orientation Session", "desc": "Welcome speech by the faculty advisor and club president. Contest rules briefing." },
+        { "time": "02:00 PM", "title": "Practice Contest", "desc": "A 1-hour mock contest to familiarize participants with the judging system (DOMjudge)." },
+        { "time": "04:00 PM", "title": "Networking Session", "desc": "Meet fellow programmers, mentors, and alumni over refreshments." }
+      ]
+    },
+    {
+      "day": "Day 2 — Main Contest",
+      "date": "September 20, 2026",
+      "events": [
+        { "time": "08:00 AM", "title": "Participants Arrival", "desc": "All contestants report to the contest hall. System check and setup." },
+        { "time": "09:00 AM", "title": "Contest Begins", "desc": "The official 5-hour programming contest starts. 10–12 algorithmic problems await." },
+        { "time": "02:00 PM", "title": "Contest Ends", "desc": "All submissions frozen. Final standings calculated." },
+        { "time": "03:00 PM", "title": "Lunch Break", "desc": "Lunch for all participants and guests." },
+        { "time": "04:00 PM", "title": "Award Ceremony", "desc": "Prize distribution, certificates, and closing remarks. Top 3 teams receive trophies and cash prizes." }
+      ]
+    }
+  ],
+  "contact": {
+    "email": "gubcpc@green.edu.bd",
+    "phone": "+880 1700-000000",
+    "address": "Green University of Bangladesh, 220/D, Begum Rokeya Sarani, Purbachal, Dhaka-1207",
+    "social": {
+      "facebook": "https://facebook.com/gubcpc",
+      "github": "https://github.com/gubcpc",
+      "linkedin": "https://linkedin.com/company/gubcpc"
+    }
+  }
+}
