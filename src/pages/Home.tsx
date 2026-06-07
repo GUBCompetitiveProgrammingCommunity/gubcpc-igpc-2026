@@ -7,6 +7,7 @@ import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import { Link } from "react-router-dom";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -258,15 +259,15 @@ export default function Home({ data }: { data: any }) {
           </p>
 
           <div ref={btnsRef} className="flex flex-wrap gap-4 justify-center mt-1">
-            <a href="/contact" data-hover
+            <Link to="/register" data-hover
               className="px-8 py-3.5 rounded-full font-bold text-black text-sm transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(34,197,94,0.5)]"
               style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)", boxShadow: "0 0 20px rgba(34,197,94,0.3)" }}>
               Register Your Team →
-            </a>
-            <a href="/schedule" data-hover
+            </Link>
+            <Link to="/schedule" data-hover
               className="px-8 py-3.5 rounded-full font-semibold text-sm border border-green-500/30 text-green-300 transition-all duration-300 hover:bg-green-500/10 hover:border-green-400/50 hover:scale-105">
               View Schedule
-            </a>
+            </Link>
           </div>
 
           <div ref={metaRef} className="flex items-center gap-5 mt-1 flex-wrap justify-center">
@@ -284,7 +285,7 @@ export default function Home({ data }: { data: any }) {
           </div>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-40">
+        <div className="mt-5 flex flex-col items-center gap-2 animate-bounce opacity-40">
           <span className="text-[10px] text-green-500 tracking-[0.3em] uppercase">Scroll</span>
           <div className="w-px h-8 bg-gradient-to-b from-green-500 to-transparent" />
         </div>
@@ -412,23 +413,14 @@ export default function Home({ data }: { data: any }) {
                 </div>
               ))}
             </div>
-            <a href="/contact" data-hover
+            <Link to="/register" data-hover
               className="cta-item inline-block px-12 py-4 rounded-full font-black text-black text-sm transition-all duration-300 hover:scale-105 hover:shadow-[0_0_50px_rgba(34,197,94,0.5)]"
               style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)", boxShadow: "0 0 30px rgba(34,197,94,0.3)", letterSpacing: "0.08em" }}>
               REGISTER YOUR TEAM →
-            </a>
+            </Link>
           </div>
         </div>
       </section>
-
-      <footer className="py-12 px-6 border-t border-green-900/30">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <img src="/logo-dark.png" alt="GUBCPC" className="h-10 w-auto opacity-70" />
-          <p className="text-green-700 text-xs text-center">© 2026 GUB Competitive Programming Community · Green University of Bangladesh</p>
-          <p className="text-green-800 text-xs tracking-[0.2em] uppercase">Think · Code · Solve</p>
-        </div>
-      </footer>
-
       <style>{`
         @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
         @keyframes blink { 50% { opacity: 0; } }

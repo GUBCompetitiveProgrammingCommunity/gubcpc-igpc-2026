@@ -8,6 +8,9 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Schedule from "./pages/Schedule";
 import Contact from "./pages/Contact";
+import RegisterTeam from "./pages/RegisterTeam";
+import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -27,6 +30,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+     <ScrollToTop />
       <div className="min-h-screen bg-[#050f07] text-white font-sans selection:bg-green-500/30">
         <Cursor />
         <Bubbles />
@@ -36,7 +40,9 @@ export default function App() {
           <Route path="/about" element={<About data={data} />} />
           <Route path="/schedule" element={<Schedule data={data} />} />
           <Route path="/contact" element={<Contact data={data} />} />
+          <Route path="/register" element={<RegisterTeam data={data} />} />
         </Routes>
+        <Footer />
       </div>
     </BrowserRouter>
   );

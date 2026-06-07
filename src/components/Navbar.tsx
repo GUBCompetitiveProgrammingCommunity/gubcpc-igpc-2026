@@ -106,12 +106,12 @@ export default function Navbar() {
             <div className="absolute inset-0 rounded-full blur-xl transition-all duration-500"
               style={{ background: "rgba(34,197,94,0.2)", transform: scrolled ? "scale(1.4)" : "scale(1)", opacity: scrolled ? 0.8 : 0.3 }}
             />
-            {/**<img src="/logo-dark.png" alt="GUBCPC" className="relative h-10 w-auto transition-all duration-500"
+            {/* <img src="/logo-dark.png" alt="GUBCPC" className="relative h-10 w-auto transition-all duration-500"
               style={{
                 filter: `drop-shadow(0 0 ${scrolled ? 16 + intensity * 12 : 6}px rgba(34,197,94,${0.3 + intensity * 0.4}))`,
                 transform: `scale(${scrolled ? 0.9 : 1})`,
               }}
-            />**/}
+            />*/}
           </div>
           <div className="hidden lg:flex flex-col leading-tight transition-all duration-500"
             style={{ opacity: scrolled ? 0 : 1, transform: `translateX(${scrolled ? -10 : 0}px)` }}>
@@ -147,7 +147,7 @@ export default function Navbar() {
           <div className="ml-3 relative group">
             <div className="absolute -inset-0.5 rounded-full blur opacity-0 group-hover:opacity-100 transition-all duration-300"
               style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)" }} />
-            <Link to="/contact" data-hover
+            <Link to="/register" data-hover
               className="relative px-5 py-2.5 text-xs font-black rounded-full text-black flex items-center gap-2 transition-all duration-300 hover:scale-105"
               style={{
                 background: "linear-gradient(135deg, #22c55e, #16a34a)",
@@ -183,7 +183,7 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
-          <Link to="/contact"
+          <Link to="/register"
             className="mt-2 px-4 py-3.5 rounded-xl text-sm font-black text-center text-black"
             style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)" }}>
             Register Now →
