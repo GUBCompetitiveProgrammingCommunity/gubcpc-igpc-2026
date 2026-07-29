@@ -184,7 +184,7 @@ export default function About({ data }: { data: any }) {
         <div className="max-w-5xl mx-auto">
           <div ref={teamTitleRef} className="text-center mb-12">
             <p className="text-green-500 text-xs tracking-[0.4em] uppercase font-bold mb-2">The Team</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-white">Meet Our Leadership</h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-white">Problem Setters</h2>
           </div>
           <div ref={teamGridRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {team.map((member: any, i: number) => (

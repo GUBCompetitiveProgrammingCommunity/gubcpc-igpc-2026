@@ -68,34 +68,18 @@ function Countdown({ target }: { target: string }) {
   }, [target]);
 
   const units = [
-    { label: "Days", val: time.d },
-    { label: "Hours", val: time.h },
-    { label: "Minutes", val: time.m },
-    { label: "Seconds", val: time.s },
+    { label: "DAYS", val: time.d },
+    { label: "HOURS", val: time.h },
+    { label: "MIN", val: time.m },
+    { label: "SEC", val: time.s },
   ];
 
   return (
-    <div className="flex gap-4 sm:gap-6 justify-center flex-wrap">
+    <div className="timer-grid">
       {units.map(({ label, val }) => (
-        <div key={label} className="flex flex-col items-center">
-          <div
-            className="countdown-digit relative flex items-center justify-center rounded-2xl text-3xl sm:text-4xl font-bold font-mono"
-            style={{
-              width: "6rem",
-              height: "6rem",
-              background: "linear-gradient(145deg, rgba(0,25,10,0.9), rgba(0,15,6,0.95))",
-              border: "1px solid rgba(34,197,94,0.2)",
-              boxShadow: "0 0 30px rgba(34,197,94,0.06), inset 0 1px 0 rgba(34,197,94,0.1)",
-              color: "#4ade80",
-              textShadow: "0 0 20px rgba(74,222,128,0.5)",
-            }}
-          >
-            <span className="relative z-10 tabular-nums">{String(val).padStart(2, "0")}</span>
-            <div className="absolute inset-x-0 top-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent)" }} />
-            <div className="absolute inset-x-0 bottom-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(34,197,94,0.15), transparent)" }} />
-            <div className="absolute inset-0 rounded-2xl" style={{ background: "radial-gradient(circle at 50% 0%, rgba(34,197,94,0.08), transparent 60%)" }} />
-          </div>
-          <span className="mt-2.5 text-[10px] tracking-[0.25em] text-green-600 uppercase font-bold">{label}</span>
+        <div key={label} className="timer-box">
+          <div className="num tabular-nums">{String(val).padStart(2, "0")}</div>
+          <div className="lbl">{label}</div>
         </div>
       ))}
     </div>
@@ -112,8 +96,7 @@ export default function Home({ data }: { data: any }) {
   const btnsRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const countdownSectionRef = useRef<HTMLDivElement>(null);
-  const countdownTitleRef = useRef<HTMLDivElement>(null);
-  const countdownDigitsRef = useRef<HTMLDivElement>(null);
+  const timerPanelRef = useRef<HTMLDivElement>(null);
   const sliderSectionRef = useRef<HTMLDivElement>(null);
   const sliderTitleRef = useRef<HTMLDivElement>(null);
   const sliderBoxRef = useRef<HTMLDivElement>(null);
@@ -138,17 +121,15 @@ export default function Home({ data }: { data: any }) {
         .fromTo(typingRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.4")
         .fromTo(descRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.3")
         .fromTo(btnsRef.current!.children, { y: 20, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, stagger: 0.12, duration: 0.6, ease: "back.out(1.5)" }, "-=0.3")
-        .fromTo(metaRef.current!.children, { y: 10, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.08, duration: 0.5, ease: "power2.out" }, "-=0.2");
+        .fromTo(metaRef.current!.children, { y: 10, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.08, duration: 0.5, ease: "power2.out" }, "-=0.2")
+        .fromTo(timerPanelRef.current, { x: 50, opacity: 0, scale: 0.95 }, { x: 0, opacity: 1, scale: 1, duration: 0.8, ease: "power3.out" }, "-=0.8");
 
-      gsap.fromTo(countdownTitleRef.current, { y: 50, opacity: 0 }, {
-        y: 0, opacity: 1, duration: 0.8, ease: "power3.out",
-        scrollTrigger: { trigger: countdownSectionRef.current, start: "top 80%" }
-      });
-      gsap.fromTo(countdownDigitsRef.current?.querySelectorAll(".countdown-digit") || [], { y: 40, opacity: 0, scale: 0.8, rotateX: 45 }, {
-        y: 0, opacity: 1, scale: 1, rotateX: 0,
-        stagger: 0.1, duration: 0.8, ease: "back.out(1.5)",
-        scrollTrigger: { trigger: countdownSectionRef.current, start: "top 75%" }
-      });
+      if (countdownSectionRef.current) {
+        gsap.fromTo(countdownSectionRef.current, { y: 50, opacity: 0, scale: 0.96 }, {
+          y: 0, opacity: 1, scale: 1, duration: 0.8, ease: "power3.out",
+          scrollTrigger: { trigger: countdownSectionRef.current, start: "top 80%" }
+        });
+      }
 
       gsap.fromTo(sliderTitleRef.current, { y: 40, opacity: 0, x: -30 }, {
         y: 0, opacity: 1, x: 0, duration: 0.8, ease: "power3.out",
@@ -227,61 +208,47 @@ export default function Home({ data }: { data: any }) {
           />
         ))}
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center flex flex-col items-center gap-5">
-          <div ref={badgeRef} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase"
-            style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)", color: "#4ade80" }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" style={{ boxShadow: "0 0 8px #22c55e" }} />
-            Registration Open — IUPC 2026
-          </div>
-
-          <div ref={logoRef}>
-            <img src="/logo-dark.png" alt="GUBCPC" className="h-28 w-auto mx-auto"
-              style={{ filter: "drop-shadow(0 0 40px rgba(34,197,94,0.4))" }} />
-          </div>
-
-          <h1 ref={headingRef} className="text-4xl sm:text-6xl lg:text-7xl font-black leading-none tracking-tight"
-            style={{
-              background: "linear-gradient(160deg, #ffffff 0%, #bbf7d0 40%, #4ade80 70%, #16a34a 100%)",
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-            }}>
-            Intra University<br />Programming Contest
-          </h1>
-
-          <div ref={typingRef} className="h-10 flex items-center justify-center">
-            <span className="text-xl sm:text-2xl font-mono text-green-300">
-              {typed}
-              <span className="text-green-400" style={{ animation: "blink 1s step-end infinite" }}>|</span>
-            </span>
-          </div>
-
-          <p ref={descRef} className="max-w-xl text-green-200/55 text-base leading-relaxed font-light">
-            {event?.description || "Compete with the best. Conquer algorithms. Rise to the top."}
-          </p>
-
-          <div ref={btnsRef} className="flex flex-wrap gap-4 justify-center mt-1">
-            <Link to="/register" data-hover
-              className="px-8 py-3.5 rounded-full font-bold text-black text-sm transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(34,197,94,0.5)]"
-              style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)", boxShadow: "0 0 20px rgba(34,197,94,0.3)" }}>
-              Register Your Team →
-            </Link>
-            <Link to="/schedule" data-hover
-              className="px-8 py-3.5 rounded-full font-semibold text-sm border border-green-500/30 text-green-300 transition-all duration-300 hover:bg-green-500/10 hover:border-green-400/50 hover:scale-105">
-              View Schedule
-            </Link>
-          </div>
-
-          <div ref={metaRef} className="flex items-center gap-5 mt-1 flex-wrap justify-center">
-            {[
-              { icon: "📍", text: event?.venue || "Green University of Bangladesh" },
-              { icon: "📅", text: "September 19–20, 2026" },
-              { icon: "🏆", text: "Prize Pool: BDT 50,000" },
-            ].map(({ icon, text }, i) => (
-              <div key={i} className="flex items-center gap-1.5 text-sm text-green-400/55">
-                {i > 0 && <span className="hidden sm:block w-px h-3 bg-green-800" />}
-                <span>{icon}</span>
-                <span>{text}</span>
+        <div className="wrap relative z-10 w-full px-6">
+          <div className="hero">
+            <div className="hero-left">
+              <div ref={badgeRef} className="badge">
+                <span className=""></span> REGISTRATION OPEN — IUPC 2026
               </div>
-            ))}
+              <div ref={logoRef} className="logo-row">
+                GUB<span className="c-orb">C</span>PC
+              </div>
+              <h1 ref={headingRef} className="title">
+                Intra University<br />Programming <span className="hl">Contest</span>
+              </h1>
+              <div ref={typingRef} className="tagline">
+                {typed}
+                <span className="text-[#39e07a]" style={{ animation: "blink 1s step-end infinite" }}>|</span>
+              </div>
+              <p ref={descRef} className="desc">
+                {event?.description || "GUBCPC hosts its annual Intra University Programming Contest, bringing together the brightest minds from Green University of Bangladesh. Compete, collaborate, and conquer algorithmic challenges in this prestigious programming event."}
+              </p>
+              <div ref={btnsRef} className="cta-row">
+                <Link to="/register" className="btn-primary" data-hover>Register Your Team →</Link>
+                <Link to="/schedule" className="btn-secondary" data-hover>View Schedule</Link>
+              </div>
+              <div ref={metaRef} className="meta-row">
+                <span>📍 <b>{event?.venue || "Green University of Bangladesh, Purbachal Campus"}</b></span>
+                <span>📅 <b>September 19–20, 2026</b></span>
+                <span>🏆 Prize Pool: <b>{event?.prizePool || "BDT 50,000"}</b></span>
+              </div>
+            </div>
+
+            <div ref={timerPanelRef} className="hero-right">
+              <div className="timer-eyebrow">EVENT COUNTDOWN</div>
+              <div className="timer-title">Contest Begins In</div>
+              <div className="timer-sub">
+                <span className="text-[#39e07a] font-bold">GUBCPC</span> Intra University Programming Contest 2026
+              </div>
+              <Countdown target={event?.date || "2026-09-20T09:00:00"} />
+              <div className="timer-deadline">
+                Registration deadline: <b>{event?.registrationDeadline ? new Date(event.registrationDeadline).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "September 10, 2026"}</b>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -291,24 +258,45 @@ export default function Home({ data }: { data: any }) {
         </div>
       </section>
 
-      <section ref={countdownSectionRef} className="py-24 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse 60% 60% at 50% 50%, rgba(16,78,36,0.12), transparent)" }} />
-        <div className="max-w-3xl mx-auto text-center">
-          <div ref={countdownTitleRef}>
-            <p className="text-green-500 text-xs tracking-[0.4em] uppercase font-bold mb-3">Event Countdown</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-white mb-3">Contest Begins In</h2>
-            <p className="text-green-400/50 text-sm mb-10">
-              <span className="text-green-400">GUBCPC</span> Intra University Programming Contest 2026
-            </p>
-          </div>
-          <div ref={countdownDigitsRef}>
-            <Countdown target={event?.date || "2026-09-20T09:00:00"} />
-          </div>
-          <div className="mt-10 flex items-center justify-center gap-2 text-sm text-green-600">
-            <span className="w-1 h-1 rounded-full bg-green-600 animate-pulse" />
-            Registration deadline:
-            <span className="text-green-400 font-semibold">September 10, 2026</span>
+      <section className="wrap px-6 py-12">
+        <div ref={countdownSectionRef} className="cta-band">
+          <div className="eyebrow">PRIZES &amp; REGISTRATION</div>
+          <h2>Compete for the <span>Championship</span></h2>
+          <p className="max-w-xl mx-auto mb-10 text-green-200/50">
+            Form a team of up to 3 members, solve algorithmic challenges, and claim your share of the prize pool!
+          </p>
+          <div className="prize-reg-grid">
+            <div className="prize-distribution">
+              <div className="prize-item gold">
+                <span className="prize-badge">🥇 CHAMPION</span>
+                <span className="prize-amount">BDT 25,000</span>
+                <span className="prize-desc">Trophy + Certificates + Goodies</span>
+              </div>
+              <div className="prize-item silver">
+                <span className="prize-badge">🥈 1ST RUNNER-UP</span>
+                <span className="prize-amount">BDT 15,000</span>
+                <span className="prize-desc">Trophy + Certificates + Goodies</span>
+              </div>
+              <div className="prize-item bronze">
+                <span className="prize-badge">🥉 2ND RUNNER-UP</span>
+                <span className="prize-amount">BDT 10,000</span>
+                <span className="prize-desc">Trophy + Certificates + Goodies</span>
+              </div>
+            </div>
+
+            <div className="registration-card">
+              <div className="reg-icon">🎟️</div>
+              <h3>Registration Fee</h3>
+              <div className="reg-price">BDT 300<span className="team-unit"> / team</span></div>
+              <ul className="reg-requirements">
+                <li><span>✓</span> Maximum 3 members per team</li>
+                <li><span>✓</span> Must be enrolled students of GUB</li>
+                <li><span>✓</span> Registration deadline: Sept 10</li>
+              </ul>
+              <Link to="/register" className="btn-glow mt-6 inline-block w-full text-center" data-hover>
+                Register Your Team Now →
+              </Link>
+            </div>
           </div>
         </div>
       </section>

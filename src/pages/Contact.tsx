@@ -84,7 +84,7 @@ export default function Contact({ data }: { data: any }) {
         <div className="relative z-10 max-w-2xl mx-auto">
           <div ref={heroBadgeRef} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-6"
             style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)", color: "#4ade80" }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            {/* <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" /> */}
             Get In Touch
           </div>
           <h1 ref={heroTitleRef} className="text-4xl sm:text-6xl font-black text-white mb-5 leading-tight">
