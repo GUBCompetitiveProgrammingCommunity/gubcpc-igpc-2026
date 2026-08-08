@@ -106,17 +106,12 @@ export default function Navbar() {
             <div className="absolute inset-0 rounded-full blur-xl transition-all duration-500"
               style={{ background: "rgba(34,197,94,0.2)", transform: scrolled ? "scale(1.4)" : "scale(1)", opacity: scrolled ? 0.8 : 0.3 }}
             />
-            {/* <img src="/logo-dark.png" alt="GUBCPC" className="relative h-10 w-auto transition-all duration-500"
+            <img src="/logo-dark.png" alt="GUBCPC" className="relative h-10 w-auto transition-all duration-500"
               style={{
                 filter: `drop-shadow(0 0 ${scrolled ? 16 + intensity * 12 : 6}px rgba(34,197,94,${0.3 + intensity * 0.4}))`,
                 transform: `scale(${scrolled ? 0.9 : 1})`,
               }}
-            />*/}
-          </div>
-          <div className="hidden lg:flex flex-col leading-tight transition-all duration-500"
-            style={{ opacity: scrolled ? 0 : 1, transform: `translateX(${scrolled ? -10 : 0}px)` }}>
-            <span className="text-xs font-black tracking-[0.2em] uppercase" style={{ color: "#4ade80" }}>GUBCPC</span>
-            <span className="text-[9px] tracking-[0.15em] uppercase text-green-600">IUPC 2026</span>
+            />
           </div>
         </Link>
 

@@ -10,7 +10,7 @@
     "description": "GUBCPC hosts its annual Intra Green Programming Contest, bringing together the brightest minds from Green University of Bangladesh. Compete, collaborate, and conquer algorithmic challenges in this prestigious programming event.",
     "totalTeams": "100+",
     "prizePool": "BDT 12,000",
-    "registrationDeadline": "2026-08-22T23:59:00"
+    "registrationDeadline": "2026-08-16T23:59:00"
   },
   "slider": [
     {
@@ -69,13 +69,13 @@
       { "label": "ICPC Contestants", "value": "30+" },
       { "label": "Years Active", "value": "5+" }
     ],
-    "team": [
-      { "name": "Dr. Mohammad Shafiul Alam", "role": "Faculty Advisor", "dept": "CSE Department" },
-      { "name": "Md. Rafiqul Islam", "role": "President", "dept": "CSE - 4th Year" },
-      { "name": "Tahmina Akter", "role": "Vice President", "dept": "CSE - 4th Year" },
-      { "name": "Sabbir Ahmed", "role": "General Secretary", "dept": "CSE - 3rd Year" },
-      { "name": "Nusrat Jahan", "role": "Treasurer", "dept": "CSE - 3rd Year" },
-      { "name": "Mahmudul Hasan", "role": "Technical Lead", "dept": "CSE - 3rd Year" }
+    "problemSetters": [
+      { "name": "Ruhan Azad" },
+      { "name": "Mahfuj Bin Minhaz" },
+      { "name": "Ismatul Islam Pranto" },
+      { "name": "Md. Hosain Rohman Noyon" },
+      { "name": "Muhammad. Dinislam" },
+      { "name": "Md. Asif Samrat" }
     ]
   },
   "schedule": [
@@ -97,8 +97,8 @@
     }
   ],
   "contact": {
-    "email": "gubcpc@green.edu.bd",
-    "phone": "+880 1700-000000",
+    "email": "gubcpc@gmail.com",
+    "phone": "+880 1988-936667",
     "address": "Green University of Bangladesh, Purbachal American City, Kanchon 1460, Dhaka, Bangladesh",
     "social": {
       "facebook": "https://facebook.com/gubcpc",

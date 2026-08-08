@@ -80,7 +80,7 @@ export default function About({ data }: { data: any }) {
 
   const about = data?.about;
   const stats = about?.stats || [];
-  const team = about?.team || [];
+  const problemSetters = about?.problemSetters || [];
 
   return (
     <main className="pt-20">
@@ -108,31 +108,6 @@ export default function About({ data }: { data: any }) {
           <p ref={heroDescRef} className="text-green-200/55 text-lg leading-relaxed max-w-2xl mx-auto">
             {about?.description}
           </p>
-        </div>
-      </section>
-
-      <section ref={statsRef} className="py-20 px-6">
-        <div className="max-w-5xl mx-auto">
-          <div ref={statsTitleRef} className="text-center mb-12">
-            <p className="text-green-500 text-xs tracking-[0.4em] uppercase font-bold mb-2">Impact</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-white">By the Numbers</h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {stats.map((s: any, i: number) => (
-              <div key={i} className="stat-card flex flex-col items-center p-8 rounded-2xl text-center group relative overflow-hidden"
-                style={{ background: "rgba(0,18,7,0.75)", border: "1px solid rgba(34,197,94,0.1)" }}>
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500"
-                  style={{ background: "radial-gradient(circle at 50% 0%, rgba(34,197,94,0.1), transparent 70%)" }} />
-                <div className="absolute inset-x-0 top-0 h-px opacity-0 group-hover:opacity-100 transition-all duration-500"
-                  style={{ background: "linear-gradient(90deg, transparent, #22c55e, transparent)" }} />
-                <span className="text-5xl font-black mb-3 block group-hover:scale-110 transition-transform duration-300"
-                  style={{ color: "#4ade80", textShadow: "0 0 30px rgba(74,222,128,0.3)" }}>
-                  {s.value}
-                </span>
-                <span className="text-green-200/50 text-sm font-medium">{s.label}</span>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -187,29 +162,36 @@ export default function About({ data }: { data: any }) {
             <h2 className="text-3xl sm:text-4xl font-black text-white">Problem Setters</h2>
           </div>
           <div ref={teamGridRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {team.map((member: any, i: number) => (
+            {problemSetters.map((member: any, i: number) => (
               <div key={i}
-                className="p-6 rounded-2xl group relative overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1"
+                className="p-5 rounded-2xl group relative overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 flex items-center gap-4"
                 style={{ background: "rgba(0,18,7,0.85)", border: "1px solid rgba(34,197,94,0.1)" }}>
                 <div className="absolute inset-x-0 top-0 h-px transition-opacity duration-500 opacity-30 group-hover:opacity-100"
                   style={{ background: "linear-gradient(90deg, transparent, #22c55e, transparent)", boxShadow: "0 0 8px #22c55e" }} />
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{ background: "radial-gradient(circle at 50% 0%, rgba(34,197,94,0.06), transparent 70%)" }} />
-                <div className="relative z-10 flex items-center gap-4 mb-4">
+                {/* Avatar: photo if exists, else initial */}
+                <div className="relative z-10 flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden border border-green-500/20 group-hover:shadow-[0_0_18px_rgba(34,197,94,0.25)] transition-all duration-300">
+                  <img
+                    src={`/${member.name}.png`}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      target.style.display = "none";
+                      const fallback = target.nextElementSibling as HTMLElement | null;
+                      if (fallback) fallback.style.display = "flex";
+                    }}
+                  />
                   <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-base font-black text-white flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(34,197,94,0.3)]"
-                    style={{ background: "linear-gradient(135deg, #16a34a, #0f5c2e)" }}>
+                    className="w-full h-full items-center justify-center text-lg font-black text-white"
+                    style={{ background: "linear-gradient(135deg, #16a34a, #0f5c2e)", display: "none" }}
+                  >
                     {member.name.charAt(0)}
                   </div>
-                  <div>
-                    <div className="font-bold text-white text-sm leading-snug group-hover:text-green-200 transition-colors">{member.name}</div>
-                    <div className="text-green-400 text-xs font-bold mt-0.5">{member.role}</div>
-                  </div>
                 </div>
-                <div className="relative z-10 h-px mb-3" style={{ background: "rgba(34,197,94,0.08)" }} />
-                <div className="relative z-10 text-green-600 text-xs flex items-center gap-1.5">
-                  <span className="w-1 h-1 rounded-full bg-green-700" />
-                  {member.dept}
+                <div className="relative z-10">
+                  <div className="font-bold text-white text-sm leading-snug group-hover:text-green-200 transition-colors">{member.name}</div>
                 </div>
               </div>
             ))}

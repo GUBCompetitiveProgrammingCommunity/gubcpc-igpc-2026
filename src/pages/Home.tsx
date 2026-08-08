@@ -214,8 +214,8 @@ export default function Home({ data }: { data: any }) {
               <div ref={badgeRef} className="badge">
                 <span className=""></span> REGISTRATION OPEN — IGPC 2026
               </div>
-              <div ref={logoRef} className="logo-row">
-                <img src="/igpc-logo.png" alt="IGPC Logo" className="h-30 md:h-40 w-auto object-contain" />
+              <div ref={logoRef} className="logo-row justify-center">
+                <img src="/igpc-logo.png" alt="IGPC Logo" className="h-48 md:h-64 w-auto object-contain" />
               </div>
               <h1 ref={headingRef} className="title">
                 Intra <span className="hl">Green</span><br />Programming <span className="hl">Contest</span>
@@ -263,7 +263,7 @@ export default function Home({ data }: { data: any }) {
           <div className="eyebrow">PRIZES &amp; REGISTRATION</div>
           <h2>Compete for the <span>Championship</span></h2>
           <p className="max-w-xl mx-auto mb-10 text-green-200/50">
-            Form a team of up to 3 members, solve algorithmic challenges, and claim your share of the prize pool!
+            Form a team of up to 2 members, solve algorithmic challenges, and claim your share of the prize pool!
           </p>
           <div className="prize-reg-grid">
             <div className="prize-distribution">
@@ -297,6 +297,38 @@ export default function Home({ data }: { data: any }) {
                 Register Your Team Now →
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20 px-6 relative">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            
+            <div className="space-y-6">
+              <div>
+                <p className="text-green-500 text-xs tracking-[0.4em] uppercase font-bold mb-2">Practice Platform</p>
+                <h2 className="text-3xl sm:text-4xl font-black text-white leading-tight">
+                  Sharpen Your Skills on <span className="text-green-400">GreenOJ</span>
+                </h2>
+              </div>
+              <p className="text-green-200/60 leading-relaxed text-sm">
+                GreenOJ is the official online judge of the GUB Competitive Programming Community. It serves as the training ground for aspiring competitive programmers at GUB, offering structured practice and mock contest environments to prepare you for the upcoming Intra Green Programming Contest.
+              </p>
+              <div className="pt-2">
+                <a href="https://greenoj.bd/" target="_blank" rel="noreferrer" data-hover
+                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-black text-black text-xs transition-all duration-300 hover:scale-105 hover:shadow-[0_0_35px_rgba(34,197,94,0.4)]"
+                  style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)", boxShadow: "0 0 20px rgba(34,197,94,0.2)" }}>
+                  Start Solving on GreenOJ ➜
+                </a>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center p-8 rounded-3xl border border-green-500/10"
+              style={{ background: "rgba(0,18,7,0.4)" }}>
+              <img src="/GreenOJ.png" alt="GreenOJ Logo" className="h-44 md:h-56 w-auto object-contain" />
+            </div>
+            
           </div>
         </div>
       </section>
@@ -340,32 +372,6 @@ export default function Home({ data }: { data: any }) {
           </div>
         </section>
       )}
-
-      <section ref={statsSectionRef} className="py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <p className="text-green-500 text-xs tracking-[0.4em] uppercase font-bold mb-2">Impact</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-white">Club by the Numbers</h2>
-          </div>
-          <div ref={statsGridRef} className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {stats.map((s: any, i: number) => (
-              <div key={i}
-                className="flex flex-col items-center p-8 rounded-2xl text-center group cursor-default relative overflow-hidden"
-                style={{ background: "rgba(0,18,7,0.7)", border: "1px solid rgba(34,197,94,0.1)" }}>
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: "radial-gradient(circle at 50% 0%, rgba(34,197,94,0.08), transparent 70%)" }} />
-                <div className="absolute top-0 inset-x-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: "linear-gradient(90deg, transparent, #22c55e, transparent)" }} />
-                <span className="text-5xl font-black mb-3 transition-all duration-300 group-hover:scale-110"
-                  style={{ color: "#4ade80", textShadow: "0 0 30px rgba(74,222,128,0.3)" }}>
-                  {s.value}
-                </span>
-                <span className="text-green-200/50 text-sm font-medium tracking-wide">{s.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <section className="py-16 px-6">
         <div ref={ctaSectionRef} className="max-w-5xl mx-auto rounded-3xl p-10 sm:p-14 relative overflow-hidden"

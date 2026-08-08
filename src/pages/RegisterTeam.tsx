@@ -4,6 +4,17 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const depts = [
+  "Department of English",
+  "Department of Sociology and Anthropology",
+  "Department of Journalism and Media Communication",
+  "Department of Business Administration",
+  "Department of Law",
+  "Department of Computer Science and Engineering",
+  "Department of Electrical and Electronic Engineering",
+  "Department of Textile Engineering"
+];
+
 export default function RegisterTeam({ data }: { data: any }) {
   const heroRef = useRef<HTMLDivElement>(null);
   const heroBadgeRef = useRef<HTMLDivElement>(null);
@@ -19,9 +30,14 @@ export default function RegisterTeam({ data }: { data: any }) {
     p1Name: "",
     p1Id: "",
     p1Phone: "",
+    p1Email: "",
+    p1Dept: "",
     p2Name: "",
     p2Id: "",
     p2Phone: "",
+    p2Email: "",
+    p2Dept: "",
+    paymentPhone: "",
     trxId: ""
   });
 
@@ -71,11 +87,11 @@ export default function RegisterTeam({ data }: { data: any }) {
     transition: "border-color 0.2s, box-shadow 0.2s",
   };
 
-  const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     e.target.style.borderColor = "rgba(34,197,94,0.45)";
     e.target.style.boxShadow = "0 0 0 3px rgba(34,197,94,0.08)";
   };
-  const onBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const onBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     e.target.style.borderColor = "rgba(34,197,94,0.15)";
     e.target.style.boxShadow = "none";
   };
@@ -170,6 +186,22 @@ export default function RegisterTeam({ data }: { data: any }) {
                     />
                   </div>
                   <div>
+                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Department</label>
+                    <select
+                      style={{ ...inputStyle, cursor: "pointer" }}
+                      value={form.p1Dept}
+                      onChange={e => setForm({ ...form, p1Dept: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    >
+                      <option value="" disabled className="bg-[#050f07]">Select Department</option>
+                      {depts.map(d => (
+                        <option key={d} value={d} className="bg-[#050f07]">{d}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Phone Number</label>
                     <input
                       type="tel"
@@ -177,6 +209,19 @@ export default function RegisterTeam({ data }: { data: any }) {
                       style={{ ...inputStyle }}
                       value={form.p1Phone}
                       onChange={e => setForm({ ...form, p1Phone: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      placeholder="email@example.com"
+                      style={{ ...inputStyle }}
+                      value={form.p1Email}
+                      onChange={e => setForm({ ...form, p1Email: e.target.value })}
                       onFocus={onFocus}
                       onBlur={onBlur}
                       required
@@ -216,6 +261,22 @@ export default function RegisterTeam({ data }: { data: any }) {
                     />
                   </div>
                   <div>
+                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Department</label>
+                    <select
+                      style={{ ...inputStyle, cursor: "pointer" }}
+                      value={form.p2Dept}
+                      onChange={e => setForm({ ...form, p2Dept: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    >
+                      <option value="" disabled className="bg-[#050f07]">Select Department</option>
+                      {depts.map(d => (
+                        <option key={d} value={d} className="bg-[#050f07]">{d}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Phone Number</label>
                     <input
                       type="tel"
@@ -223,6 +284,19 @@ export default function RegisterTeam({ data }: { data: any }) {
                       style={{ ...inputStyle }}
                       value={form.p2Phone}
                       onChange={e => setForm({ ...form, p2Phone: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      placeholder="email@example.com"
+                      style={{ ...inputStyle }}
+                      value={form.p2Email}
+                      onChange={e => setForm({ ...form, p2Email: e.target.value })}
                       onFocus={onFocus}
                       onBlur={onBlur}
                       required
@@ -240,26 +314,41 @@ export default function RegisterTeam({ data }: { data: any }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                   <div className="p-3 rounded-xl border border-green-500/10 text-xs" style={{ background: "rgba(0,18,7,0.4)" }}>
                     <span className="block font-black text-[#e2125f] mb-1 font-sans">bKash (Personal)</span>
-                    <span className="font-bold text-white tracking-wider font-sans">01700-000000</span>
+                    <span className="font-bold text-white tracking-wider font-sans">01719-767459</span>
                   </div>
                   <div className="p-3 rounded-xl border border-green-500/10 text-xs" style={{ background: "rgba(0,18,7,0.4)" }}>
                     <span className="block font-black text-[#f57c00] mb-1 font-sans">Nagad (Personal)</span>
-                    <span className="font-bold text-white tracking-wider font-sans">01800-000000</span>
+                    <span className="font-bold text-white tracking-wider font-sans"> 01771-189608</span>
                   </div>
                 </div>
                 
-                <div>
-                  <label className="block text-green-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Transaction ID (TrxID)</label>
-                  <input
-                    type="text"
-                    placeholder="Enter the bKash or Nagad Transaction ID"
-                    style={{ ...inputStyle }}
-                    value={form.trxId}
-                    onChange={e => setForm({ ...form, trxId: e.target.value })}
-                    onFocus={onFocus}
-                    onBlur={onBlur}
-                    required
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-green-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Payment Phone Number</label>
+                    <input
+                      type="tel"
+                      placeholder="e.g. 017XXXXXXXX"
+                      style={{ ...inputStyle }}
+                      value={form.paymentPhone}
+                      onChange={e => setForm({ ...form, paymentPhone: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-green-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Transaction ID (TrxID)</label>
+                    <input
+                      type="text"
+                      placeholder="Enter the Transaction ID"
+                      style={{ ...inputStyle }}
+                      value={form.trxId}
+                      onChange={e => setForm({ ...form, trxId: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    />
+                  </div>
                 </div>
               </div>
 
