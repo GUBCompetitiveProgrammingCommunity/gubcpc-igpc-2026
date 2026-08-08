@@ -78,13 +78,13 @@ export default function Schedule({ data }: { data: any }) {
             </span>
           </h1>
           <p ref={heroDescRef} className="text-green-200/55 text-lg max-w-xl mx-auto mb-8">
-            Two days of programming excellence — from registration to the award ceremony.
+            Intra Green Programming Contest timeline — from registration to the award ceremony.
           </p>
           <div ref={heroBannerRef} className="inline-flex flex-wrap items-center justify-center gap-4">
             {[
-              { icon: "📅", label: "Date", val: "Sep 19–20, 2026" },
+              { icon: "📅", label: "Date", val: "August 24, 2026" },
               { icon: "📍", label: "Venue", val: "GUB Main Campus" },
-              { icon: "🕙", label: "Start", val: "9:00 AM" },
+              { icon: "🕙", label: "Start", val: "12:30 PM" },
             ].map(({ icon, label, val }) => (
               <div key={label} className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm"
                 style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)" }}>

@@ -1,42 +1,62 @@
 {
   "event": {
-    "name": "GUBCPC Intra University Programming Contest 2026",
-    "shortName": "GUBCPC-IUPC 2026",
-    "date": "2026-09-20T09:00:00",
-    "venue": "Green University of Bangladesh, Purbachal Campus",
+    "name": "GUBCPC Intra Green Programming Contest 2026",
+    "shortName": "GUBCPC-IGPC 2026",
+    "date": "2026-08-24T12:30:00",
+    "venue": "Green University of Bangladesh, Purbachal American City, Kanchon 1460",
     "organizer": "GUB Competitive Programming Community",
     "university": "Green University of Bangladesh",
     "tagline": "THINK • CODE • SOLVE",
-    "description": "GUBCPC hosts its annual Intra University Programming Contest, bringing together the brightest minds from Green University of Bangladesh. Compete, collaborate, and conquer algorithmic challenges in this prestigious programming event.",
+    "description": "GUBCPC hosts its annual Intra Green Programming Contest, bringing together the brightest minds from Green University of Bangladesh. Compete, collaborate, and conquer algorithmic challenges in this prestigious programming event.",
     "totalTeams": "100+",
-    "prizePool": "BDT 50,000",
-    "registrationDeadline": "2026-09-10T23:59:00"
+    "prizePool": "BDT 12,000",
+    "registrationDeadline": "2026-08-22T23:59:00"
   },
   "slider": [
     {
       "id": 1,
-      "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&q=80",
-      "caption": "Competitive Programming Excellence"
+      "image": "/clubMoment1.PNG",
+      "caption": "Our Recent Success at National Contests"
     },
     {
       "id": 2,
-      "image": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&q=80",
-      "caption": "Coding the Future"
+      "image": "/clubMoment2.PNG",
+      "caption": "Celebrating Achievements with Faculty and Advisors"
     },
     {
       "id": 3,
-      "image": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&q=80",
-      "caption": "Algorithms & Innovation"
+      "image": "/clubMoment3.PNG",
+      "caption": "GUB Representation on the National Stage"
     },
     {
       "id": 4,
-      "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80",
-      "caption": "Green University Programming Hub"
+      "image": "/clubMoment4.jpg",
+      "caption": "Intense Focus in the Contest Laboratory"
     },
     {
       "id": 5,
-      "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&q=80",
-      "caption": "Think. Code. Solve."
+      "image": "/clubMoment5.jpg",
+      "caption": "Collaborative Problem Solving & Hard Work"
+    },
+    {
+      "id": 6,
+      "image": "/clubMoment6.JPG",
+      "caption": "Mentorship and Knowledge Sharing Sessions"
+    },
+    {
+      "id": 7,
+      "image": "/clubMoment7.JPG",
+      "caption": "Building the Future Generation of Competitive Programmers"
+    },
+    {
+      "id": 8,
+      "image": "/clubMoment8.jpg",
+      "caption": "July Memorial Contest Prize giving ceremony"
+    },
+    {
+      "id": 9,
+      "image": "/clubMoment9.jpg",
+      "caption": "July Memorial Contest"
     }
   ],
   "about": {
@@ -60,31 +80,26 @@
   },
   "schedule": [
     {
-      "day": "Day 1 — Registration",
-      "date": "September 19, 2026",
+      "day": "Registration",
+      "date": "August 8, 2026",
       "events": [
-        { "time": "09:00 AM", "title": "Registration Opens", "desc": "Participant check-in and team registration at the main auditorium entrance." },
-        { "time": "11:00 AM", "title": "Orientation Session", "desc": "Welcome speech by the faculty advisor and club president. Contest rules briefing." },
-        { "time": "02:00 PM", "title": "Practice Contest", "desc": "A 1-hour mock contest to familiarize participants with the judging system (DOMjudge)." },
-        { "time": "04:00 PM", "title": "Networking Session", "desc": "Meet fellow programmers, mentors, and alumni over refreshments." }
+        { "time": "10:00 PM", "title": "Registration Starts", "desc": "Online registration portal opens for all teams." }
       ]
     },
     {
-      "day": "Day 2 — Main Contest",
-      "date": "September 20, 2026",
+      "day": "Contest Day",
+      "date": "August 24, 2026",
       "events": [
-        { "time": "08:00 AM", "title": "Participants Arrival", "desc": "All contestants report to the contest hall. System check and setup." },
-        { "time": "09:00 AM", "title": "Contest Begins", "desc": "The official 5-hour programming contest starts. 10–12 algorithmic problems await." },
-        { "time": "02:00 PM", "title": "Contest Ends", "desc": "All submissions frozen. Final standings calculated." },
-        { "time": "03:00 PM", "title": "Lunch Break", "desc": "Lunch for all participants and guests." },
-        { "time": "04:00 PM", "title": "Award Ceremony", "desc": "Prize distribution, certificates, and closing remarks. Top 3 teams receive trophies and cash prizes." }
+        { "time": "10:00 AM", "title": "Kit Provide", "desc": "Participant kits and ID cards distribution at GUB Main Campus." },
+        { "time": "12:30 PM", "title": "Contest Start", "desc": "Intra Green Programming Contest begins. Compete to solve algorithmic challenges." },
+        { "time": "03:30 PM", "title": "Prize Giving Ceremony", "desc": "Awards ceremony and final standings announcement at GUB Main Campus." }
       ]
     }
   ],
   "contact": {
     "email": "gubcpc@green.edu.bd",
     "phone": "+880 1700-000000",
-    "address": "Green University of Bangladesh, 220/D, Begum Rokeya Sarani, Purbachal, Dhaka-1207",
+    "address": "Green University of Bangladesh, Purbachal American City, Kanchon 1460, Dhaka, Bangladesh",
     "social": {
       "facebook": "https://facebook.com/gubcpc",
       "github": "https://github.com/gubcpc",

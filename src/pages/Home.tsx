@@ -108,7 +108,7 @@ export default function Home({ data }: { data: any }) {
     "Competitive Programming",
     "Algorithm Mastery",
     "Code. Think. Solve.",
-    "GUB IUPC 2026",
+    "GUB IGPC 2026",
   ]);
 
   useEffect(() => {
@@ -212,29 +212,29 @@ export default function Home({ data }: { data: any }) {
           <div className="hero">
             <div className="hero-left">
               <div ref={badgeRef} className="badge">
-                <span className=""></span> REGISTRATION OPEN — IUPC 2026
+                <span className=""></span> REGISTRATION OPEN — IGPC 2026
               </div>
               <div ref={logoRef} className="logo-row">
-                GUB<span className="c-orb">C</span>PC
+                <img src="/igpc-logo.png" alt="IGPC Logo" className="h-30 md:h-40 w-auto object-contain" />
               </div>
               <h1 ref={headingRef} className="title">
-                Intra University<br />Programming <span className="hl">Contest</span>
+                Intra <span className="hl">Green</span><br />Programming <span className="hl">Contest</span>
               </h1>
               <div ref={typingRef} className="tagline">
                 {typed}
                 <span className="text-[#39e07a]" style={{ animation: "blink 1s step-end infinite" }}>|</span>
               </div>
               <p ref={descRef} className="desc">
-                {event?.description || "GUBCPC hosts its annual Intra University Programming Contest, bringing together the brightest minds from Green University of Bangladesh. Compete, collaborate, and conquer algorithmic challenges in this prestigious programming event."}
+                GUBCPC organizes its annual Intra Green Programming Contest, bringing together the brightest minds from Green University of Bangladesh. Compete, collaborate, and conquer algorithmic challenges in this prestigious programming event.
               </p>
               <div ref={btnsRef} className="cta-row">
                 <Link to="/register" className="btn-primary" data-hover>Register Your Team →</Link>
                 <Link to="/schedule" className="btn-secondary" data-hover>View Schedule</Link>
               </div>
               <div ref={metaRef} className="meta-row">
-                <span>📍 <b>{event?.venue || "Green University of Bangladesh, Purbachal Campus"}</b></span>
-                <span>📅 <b>September 19–20, 2026</b></span>
-                <span>🏆 Prize Pool: <b>{event?.prizePool || "BDT 50,000"}</b></span>
+                <span>📍 <b>{event?.venue || "Green University of Bangladesh, Purbachal American City, Kanchon 1460"}</b></span>
+                <span>📅 <b>August 24, 2026</b></span>
+                <span>🏆 Prize Pool: <b>{event?.prizePool || "BDT 12,000"}</b></span>
               </div>
             </div>
 
@@ -242,7 +242,7 @@ export default function Home({ data }: { data: any }) {
               <div className="timer-eyebrow">EVENT COUNTDOWN</div>
               <div className="timer-title">Contest Begins In</div>
               <div className="timer-sub">
-                <span className="text-[#39e07a] font-bold">GUBCPC</span> Intra University Programming Contest 2026
+                <span className="text-[#39e07a] font-bold">IGPC</span> Intra Green Programming Contest 2026
               </div>
               <Countdown target={event?.date || "2026-09-20T09:00:00"} />
               <div className="timer-deadline">
@@ -269,17 +269,17 @@ export default function Home({ data }: { data: any }) {
             <div className="prize-distribution">
               <div className="prize-item gold">
                 <span className="prize-badge">🥇 CHAMPION</span>
-                <span className="prize-amount">BDT 25,000</span>
+                <span className="prize-amount">BDT 3,000</span>
                 <span className="prize-desc">Trophy + Certificates + Goodies</span>
               </div>
               <div className="prize-item silver">
                 <span className="prize-badge">🥈 1ST RUNNER-UP</span>
-                <span className="prize-amount">BDT 15,000</span>
+                <span className="prize-amount">BDT 2,000</span>
                 <span className="prize-desc">Trophy + Certificates + Goodies</span>
               </div>
               <div className="prize-item bronze">
                 <span className="prize-badge">🥉 2ND RUNNER-UP</span>
-                <span className="prize-amount">BDT 10,000</span>
+                <span className="prize-amount">BDT 1,500</span>
                 <span className="prize-desc">Trophy + Certificates + Goodies</span>
               </div>
             </div>
@@ -287,11 +287,11 @@ export default function Home({ data }: { data: any }) {
             <div className="registration-card">
               <div className="reg-icon">🎟️</div>
               <h3>Registration Fee</h3>
-              <div className="reg-price">BDT 300<span className="team-unit"> / team</span></div>
+              <div className="reg-price">BDT 350<span className="team-unit"> / team</span></div>
               <ul className="reg-requirements">
-                <li><span>✓</span> Maximum 3 members per team</li>
+                <li><span>✓</span> Maximum 2 members per team</li>
                 <li><span>✓</span> Must be enrolled students of GUB</li>
-                <li><span>✓</span> Registration deadline: Sept 10</li>
+                <li><span>✓</span> Registration deadline: August 16</li>
               </ul>
               <Link to="/register" className="btn-glow mt-6 inline-block w-full text-center" data-hover>
                 Register Your Team Now →
@@ -383,14 +383,14 @@ export default function Home({ data }: { data: any }) {
               Ready to <span style={{ color: "#4ade80" }}>Compete?</span>
             </h2>
             <p className="cta-item text-green-200/55 mb-10 max-w-md mx-auto text-base">
-              Form a team of up to 3 members and register before the deadline.
+              Form a team of up to 2 members and register before the deadline.
             </p>
             <div className="cta-item flex flex-wrap gap-3 justify-center mb-10">
               {[
-                { icon: "🏆", key: "Prize Pool", val: "BDT 50,000" },
-                { icon: "👥", key: "Max Teams", val: "100+" },
-                { icon: "⏱", key: "Duration", val: "5 Hours" },
-                { icon: "💻", key: "Platform", val: "DOMjudge" },
+                { icon: "🏆", key: "Prize Pool", val: "BDT 12,000" },
+                { icon: "👥", key: "Max Teams", val: "80" },
+                { icon: "⏱", key: "Duration", val: "3 Hours" },
+                { icon: "💻", key: "Platform", val: "GreenOJ" },
               ].map(({ icon, key, val }) => (
                 <div key={key}
                   className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm"

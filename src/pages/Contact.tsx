@@ -232,9 +232,9 @@ export default function Contact({ data }: { data: any }) {
               <div className="absolute inset-x-0 top-0 h-px"
                 style={{ background: "linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent)" }} />
               <p className="text-xs text-green-600 tracking-widest uppercase mb-1 font-bold">Registration Deadline</p>
-              <p className="text-2xl font-black text-green-300 mb-1">Sep 10, 2026</p>
+              <p className="text-2xl font-black text-green-300 mb-1">Aug 16, 2026</p>
               <div className="h-px mb-4" style={{ background: "rgba(34,197,94,0.1)" }} />
-              <p className="text-green-200/50 text-xs">Prize Pool: <span className="text-green-300 font-bold">BDT 50,000</span></p>
+              <p className="text-green-200/50 text-xs">Prize Pool: <span className="text-green-300 font-bold">BDT 12,000</span></p>
             </div>
           </div>
 

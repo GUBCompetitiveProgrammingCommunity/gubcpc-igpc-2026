@@ -14,7 +14,16 @@ export default function RegisterTeam({ data }: { data: any }) {
   const infoCardsRef = useRef<HTMLDivElement>(null);
 
   const [sent, setSent] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", message: "", team: "" });
+  const [form, setForm] = useState({
+    teamName: "",
+    p1Name: "",
+    p1Id: "",
+    p1Phone: "",
+    p2Name: "",
+    p2Id: "",
+    p2Phone: "",
+    trxId: ""
+  });
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -94,7 +103,7 @@ export default function RegisterTeam({ data }: { data: any }) {
             </span>
           </h1>
           <p ref={heroDescRef} className="text-green-200/55 text-lg max-w-xl mx-auto">
-            Questions about registration, rules, or the contest? We'd love to hear from you.
+            Register your team of 2 participants for the Intra Green Programming Contest 2026.
           </p>
         </div>
       </section>
@@ -106,33 +115,153 @@ export default function RegisterTeam({ data }: { data: any }) {
             <form
               ref={formRef}
               onSubmit={handleSubmit}
-              className="p-8 rounded-3xl flex flex-col gap-5 relative overflow-hidden"
+              className="p-8 rounded-3xl flex flex-col gap-6 relative overflow-hidden"
               style={{ background: "rgba(0,18,7,0.8)", border: "1px solid rgba(34,197,94,0.12)" }}
             >
               <div className="absolute inset-x-0 top-0 h-px"
                 style={{ background: "linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent)" }} />
               <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full pointer-events-none opacity-[0.04]"
                 style={{ background: "radial-gradient(circle, #22c55e, transparent)" }} />
-              <h2 className="text-xl font-black text-white">Fill out the form</h2>
-              {[
-                { label: "Full Name", key: "name", type: "text", placeholder: "Your full name" },
-                { label: "Email Address", key: "email", type: "email", placeholder: "your@email.com" },
-                { label: "Team Name", key: "team", type: "text", placeholder: "For registration inquiries" },
-              ].map(({ label, key, type, placeholder }) => (
-                <div key={key}>
-                  <label className="block text-green-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">{label}</label>
+              
+              <h2 className="text-2xl font-black text-white mb-2">Team Details</h2>
+              
+              <div>
+                <label className="block text-green-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Team Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter your team name"
+                  style={{ ...inputStyle }}
+                  value={form.teamName}
+                  onChange={e => setForm({ ...form, teamName: e.target.value })}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
+                  required
+                />
+              </div>
+
+              {/* Participant 1 */}
+              <div className="p-5 rounded-2xl border border-green-500/10" style={{ background: "rgba(0,12,3,0.4)" }}>
+                <h3 className="text-sm font-black text-green-400 uppercase tracking-wider mb-4">Participant 1 (Team Leader)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2">
+                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      placeholder="Name of Participant 1"
+                      style={{ ...inputStyle }}
+                      value={form.p1Name}
+                      onChange={e => setForm({ ...form, p1Name: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Student ID</label>
+                    <input
+                      type="text"
+                      placeholder="Student ID"
+                      style={{ ...inputStyle }}
+                      value={form.p1Id}
+                      onChange={e => setForm({ ...form, p1Id: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Phone Number</label>
+                    <input
+                      type="tel"
+                      placeholder="Phone number"
+                      style={{ ...inputStyle }}
+                      value={form.p1Phone}
+                      onChange={e => setForm({ ...form, p1Phone: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Participant 2 */}
+              <div className="p-5 rounded-2xl border border-green-500/10" style={{ background: "rgba(0,12,3,0.4)" }}>
+                <h3 className="text-sm font-black text-green-400 uppercase tracking-wider mb-4">Participant 2</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2">
+                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      placeholder="Name of Participant 2"
+                      style={{ ...inputStyle }}
+                      value={form.p2Name}
+                      onChange={e => setForm({ ...form, p2Name: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Student ID</label>
+                    <input
+                      type="text"
+                      placeholder="Student ID"
+                      style={{ ...inputStyle }}
+                      value={form.p2Id}
+                      onChange={e => setForm({ ...form, p2Id: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Phone Number</label>
+                    <input
+                      type="tel"
+                      placeholder="Phone number"
+                      style={{ ...inputStyle }}
+                      value={form.p2Phone}
+                      onChange={e => setForm({ ...form, p2Phone: e.target.value })}
+                      onFocus={onFocus}
+                      onBlur={onBlur}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Details */}
+              <div className="p-5 rounded-2xl border border-green-500/20" style={{ background: "rgba(34,197,94,0.03)" }}>
+                <h3 className="text-sm font-black text-green-400 uppercase tracking-wider mb-2">Registration Fee Payment</h3>
+                <p className="text-xs text-green-200/60 mb-4 leading-relaxed font-sans">
+                  Send registration fee of <b className="text-white">BDT 350</b> to any of the following accounts:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                  <div className="p-3 rounded-xl border border-green-500/10 text-xs" style={{ background: "rgba(0,18,7,0.4)" }}>
+                    <span className="block font-black text-[#e2125f] mb-1 font-sans">bKash (Personal)</span>
+                    <span className="font-bold text-white tracking-wider font-sans">01700-000000</span>
+                  </div>
+                  <div className="p-3 rounded-xl border border-green-500/10 text-xs" style={{ background: "rgba(0,18,7,0.4)" }}>
+                    <span className="block font-black text-[#f57c00] mb-1 font-sans">Nagad (Personal)</span>
+                    <span className="font-bold text-white tracking-wider font-sans">01800-000000</span>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-green-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Transaction ID (TrxID)</label>
                   <input
-                    type={type}
-                    placeholder={placeholder}
+                    type="text"
+                    placeholder="Enter the bKash or Nagad Transaction ID"
                     style={{ ...inputStyle }}
-                    value={form[key as keyof typeof form]}
-                    onChange={e => setForm({ ...form, [key]: e.target.value })}
+                    value={form.trxId}
+                    onChange={e => setForm({ ...form, trxId: e.target.value })}
                     onFocus={onFocus}
                     onBlur={onBlur}
-                    required={key !== "team"}
+                    required
                   />
                 </div>
-              ))}
+              </div>
 
               <button
                 type="submit"
@@ -140,7 +269,7 @@ export default function RegisterTeam({ data }: { data: any }) {
                 className="w-full py-4 rounded-xl font-black text-black text-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(34,197,94,0.4)]"
                 style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)", boxShadow: "0 0 20px rgba(34,197,94,0.2)", letterSpacing: "0.08em" }}
               >
-                SUBMIT →
+                SUBMIT REGISTRATION →
               </button>
             </form>
           ) : (
@@ -155,14 +284,14 @@ export default function RegisterTeam({ data }: { data: any }) {
                 ✅
               </div>
               <div>
-                <h3 className="text-2xl font-black text-white mb-2">Message Sent!</h3>
-                <p className="text-green-200/50 text-sm max-w-xs">We'll get back to you within 24 hours. Thank you for reaching out!</p>
+                <h3 className="text-2xl font-black text-white mb-2">Registration Submitted!</h3>
+                <p className="text-green-200/50 text-sm max-w-xs font-sans">Thank you for registering. We will verify your payment and contact you shortly!</p>
               </div>
               <button
                 onClick={() => setSent(false)}
                 className="px-7 py-2.5 rounded-full text-sm border border-green-500/25 text-green-400 transition-all hover:bg-green-500/10"
               >
-                Send Another →
+                Submit Another →
               </button>
             </div>
           )}
@@ -216,9 +345,9 @@ export default function RegisterTeam({ data }: { data: any }) {
               <div className="absolute inset-x-0 top-0 h-px"
                 style={{ background: "linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent)" }} />
               <p className="text-xs text-green-600 tracking-widest uppercase mb-1 font-bold">Registration Deadline</p>
-              <p className="text-2xl font-black text-green-300 mb-1">Sep 10, 2026</p>
+              <p className="text-2xl font-black text-green-300 mb-1 font-sans">Aug 16, 2026</p>
               <div className="h-px mb-4" style={{ background: "rgba(34,197,94,0.1)" }} />
-              <p className="text-green-200/50 text-xs">Prize Pool: <span className="text-green-300 font-bold">BDT 50,000</span></p>
+              <p className="text-green-200/50 text-xs font-sans">Prize Pool: <span className="text-green-300 font-bold">BDT 12,000</span></p>
             </div>
           </div>
 
