@@ -1,8 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Swal from "sweetalert2";
+import { submitContactMessage } from "../lib/api";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const errorToast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 5000,
+  timerProgressBar: true,
+  didOpen: (el) => {
+    el.addEventListener("mouseenter", Swal.stopTimer);
+    el.addEventListener("mouseleave", Swal.resumeTimer);
+  },
+});
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Contact({ data }: { data: any }) {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -14,7 +30,9 @@ export default function Contact({ data }: { data: any }) {
   const infoCardsRef = useRef<HTMLDivElement>(null);
 
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "", team: "" });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -42,12 +60,51 @@ export default function Contact({ data }: { data: any }) {
 
   const contact = data?.contact;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const updateField = (key: keyof typeof form, value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    if (fieldErrors[key]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
+  };
+
+  const validate = () => {
+    const next: Record<string, string> = {};
+    if (!form.name.trim()) next.name = "Name is required.";
+    if (!emailRegex.test(form.email.trim())) next.email = "Enter a valid email address.";
+    if (!form.message.trim()) next.message = "Message is required.";
+    return next;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    gsap.to(formRef.current, {
-      scale: 0.95, opacity: 0, duration: 0.3, ease: "power2.in",
-      onComplete: () => setSent(true),
-    });
+    const nextErrors = validate();
+    if (Object.keys(nextErrors).length > 0) {
+      setFieldErrors(nextErrors);
+      errorToast.fire({ icon: "error", title: "Please fix the errors below before submitting." });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await submitContactMessage({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        subject: form.team.trim() ? `Contest inquiry (Team: ${form.team.trim()})` : "Contest inquiry",
+        message: form.message.trim(),
+      });
+      gsap.to(formRef.current, {
+        scale: 0.95, opacity: 0, duration: 0.3, ease: "power2.in",
+        onComplete: () => setSent(true),
+      });
+    } catch (err: any) {
+      errorToast.fire({ icon: "error", title: err.message || "Failed to send your message." });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputStyle: React.CSSProperties = {
@@ -126,13 +183,20 @@ export default function Contact({ data }: { data: any }) {
                   <input
                     type={type}
                     placeholder={placeholder}
-                    style={{ ...inputStyle }}
+                    style={
+                      fieldErrors[key]
+                        ? { ...inputStyle, border: "1px solid rgba(244,63,94,0.6)" }
+                        : inputStyle
+                    }
                     value={form[key as keyof typeof form]}
-                    onChange={e => setForm({ ...form, [key]: e.target.value })}
+                    onChange={e => updateField(key as keyof typeof form, e.target.value)}
                     onFocus={onFocus}
                     onBlur={onBlur}
                     required={key !== "team"}
                   />
+                  {fieldErrors[key] ? (
+                    <p className="mt-1.5 text-xs font-semibold" style={{ color: "#fb7185" }}>{fieldErrors[key]}</p>
+                  ) : null}
                 </div>
               ))}
 
@@ -141,22 +205,30 @@ export default function Contact({ data }: { data: any }) {
                 <textarea
                   rows={5}
                   placeholder="Your message..."
-                  style={{ ...inputStyle, resize: "none" }}
+                  style={
+                    fieldErrors.message
+                      ? { ...inputStyle, resize: "none", border: "1px solid rgba(244,63,94,0.6)" }
+                      : { ...inputStyle, resize: "none" }
+                  }
                   value={form.message}
-                  onChange={e => setForm({ ...form, message: e.target.value })}
+                  onChange={e => updateField("message", e.target.value)}
                   onFocus={onFocus as any}
                   onBlur={onBlur as any}
                   required
                 />
+                {fieldErrors.message ? (
+                  <p className="mt-1.5 text-xs font-semibold" style={{ color: "#fb7185" }}>{fieldErrors.message}</p>
+                ) : null}
               </div>
 
               <button
                 type="submit"
                 data-hover
-                className="w-full py-4 rounded-xl font-black text-black text-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(34,197,94,0.4)]"
+                disabled={submitting}
+                className="w-full py-4 rounded-xl font-black text-black text-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(34,197,94,0.4)] disabled:opacity-60 disabled:hover:scale-100"
                 style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)", boxShadow: "0 0 20px rgba(34,197,94,0.2)", letterSpacing: "0.08em" }}
               >
-                SEND MESSAGE →
+                {submitting ? "SENDING..." : "SEND MESSAGE →"}
               </button>
             </form>
           ) : (

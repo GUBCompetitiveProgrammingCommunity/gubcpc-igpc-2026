@@ -90,3 +90,21 @@ export async function getRegistrationStatus(
   const data = await parseJsonOrThrow(res);
   return data.data;
 }
+
+export interface ContactMessageBody {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export async function submitContactMessage(
+  body: ContactMessageBody
+): Promise<{ message: string }> {
+  const res = await fetch(`${API_BASE_URL}/student/contact`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return parseJsonOrThrow(res);
+}
