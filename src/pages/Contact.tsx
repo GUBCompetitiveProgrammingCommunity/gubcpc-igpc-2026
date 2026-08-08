@@ -20,6 +20,26 @@ const errorToast = Swal.mixin({
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const COOLDOWN_MS = 15 * 60 * 1000;
+const LAST_SUBMIT_STORAGE_KEY = "gubcpc_contact_last_submitted_at";
+
+const getStoredLastSubmit = (): number | null => {
+  try {
+    const raw = localStorage.getItem(LAST_SUBMIT_STORAGE_KEY);
+    const parsed = raw ? Number(raw) : null;
+    return parsed && !Number.isNaN(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
+const formatRemaining = (ms: number) => {
+  const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+};
+
 export default function Contact({ data }: { data: any }) {
   const heroRef = useRef<HTMLDivElement>(null);
   const heroBadgeRef = useRef<HTMLDivElement>(null);
@@ -29,10 +49,20 @@ export default function Contact({ data }: { data: any }) {
   const formRef = useRef<HTMLFormElement>(null);
   const infoCardsRef = useRef<HTMLDivElement>(null);
 
-  const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "", team: "" });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [justSubmitted, setJustSubmitted] = useState(false);
+  const [lastSubmittedAt, setLastSubmittedAt] = useState<number | null>(() => getStoredLastSubmit());
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const cooldownRemainingMs = lastSubmittedAt ? Math.max(0, lastSubmittedAt + COOLDOWN_MS - now) : 0;
+  const isLocked = cooldownRemainingMs > 0;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -98,7 +128,17 @@ export default function Contact({ data }: { data: any }) {
       });
       gsap.to(formRef.current, {
         scale: 0.95, opacity: 0, duration: 0.3, ease: "power2.in",
-        onComplete: () => setSent(true),
+        onComplete: () => {
+          const submittedAt = Date.now();
+          try {
+            localStorage.setItem(LAST_SUBMIT_STORAGE_KEY, String(submittedAt));
+          } catch {
+            // ignore storage failures (private browsing, etc.)
+          }
+          setLastSubmittedAt(submittedAt);
+          setJustSubmitted(true);
+          setForm({ name: "", email: "", message: "", team: "" });
+        },
       });
     } catch (err: any) {
       errorToast.fire({ icon: "error", title: err.message || "Failed to send your message." });
@@ -159,7 +199,7 @@ export default function Contact({ data }: { data: any }) {
       <section ref={formSectionRef} className="py-8 px-6 pb-24">
         <div className="max-w-5xl mx-auto grid md:grid-cols-[1fr,380px] gap-10 items-start">
 
-          {!sent ? (
+          {!isLocked ? (
             <form
               ref={formRef}
               onSubmit={handleSubmit}
@@ -240,18 +280,22 @@ export default function Contact({ data }: { data: any }) {
                 style={{ background: "radial-gradient(circle at 50% 50%, rgba(34,197,94,0.06), transparent 70%)" }} />
               <div className="w-20 h-20 rounded-full flex items-center justify-center text-3xl"
                 style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", boxShadow: "0 0 40px rgba(34,197,94,0.15)" }}>
-                ✅
+                {justSubmitted ? "✅" : "⏳"}
               </div>
               <div>
-                <h3 className="text-2xl font-black text-white mb-2">Message Sent!</h3>
-                <p className="text-green-200/50 text-sm max-w-xs">We'll get back to you within 24 hours. Thank you for reaching out!</p>
+                <h3 className="text-2xl font-black text-white mb-2">
+                  {justSubmitted ? "Message Sent!" : "Please wait a moment"}
+                </h3>
+                <p className="text-green-200/50 text-sm max-w-xs">
+                  {justSubmitted
+                    ? "We'll get back to you within 24 hours. Thank you for reaching out!"
+                    : "You've already sent us a message recently. This limit helps prevent spam."}
+                </p>
               </div>
-              <button
-                onClick={() => setSent(false)}
-                className="px-7 py-2.5 rounded-full text-sm border border-green-500/25 text-green-400 transition-all hover:bg-green-500/10"
-              >
-                Send Another →
-              </button>
+              <div className="px-5 py-2.5 rounded-full text-sm font-bold"
+                style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", color: "#4ade80" }}>
+                You can send another message in {formatRemaining(cooldownRemainingMs)}
+              </div>
             </div>
           )}
 
