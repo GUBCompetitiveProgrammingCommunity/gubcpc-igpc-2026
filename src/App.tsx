@@ -11,7 +11,6 @@ import Contact from "./pages/Contact";
 import RegisterTeam from "./pages/RegisterTeam";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
-
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
