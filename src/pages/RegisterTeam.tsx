@@ -22,16 +22,17 @@ const errorToast = Swal.mixin({
 const showErrorToast = (message: string) => errorToast.fire({ icon: "error", title: message });
 
 const depts = [
-  "Department of English",
-  "Department of Sociology and Anthropology",
-  "Department of Journalism and Media Communication",
-  "Department of Business Administration",
-  "Department of Law",
-  "Department of Computer Science and Engineering",
-  "Department of Electrical and Electronic Engineering",
-  "Department of Textile Engineering",
-  "Department of Software Engineering",
-  "Department of AI and Data Science"
+  "CSE",
+  "SWE",
+  "ADS",
+  "EEE",
+  "TEX",
+  "JMC",
+  "BBA",
+  "LAW",
+  "ENG",
+  "SOC",
+  "Other",  
 ];
 
 const paymentMethods = ["bKash", "Nagad", "Rocket"];
@@ -627,7 +628,7 @@ export default function RegisterTeam({ data }: { data: any }) {
               </div>
               <div>
                 <h3 className="text-2xl font-black text-white mb-2">Registration Submitted!</h3>
-                <p className="text-green-200/50 text-sm max-w-xs font-sans">Thank you for registering. We will verify your payment and contact you shortly!</p>
+                <p className="text-green-200/50 text-sm max-w-xs mx-auto font-sans">Thank you for registering. We will verify your payment and contact you shortly!</p>
                 {registrationCode && (
                   <p className="text-green-300 text-sm font-bold mt-3 font-sans">
                     Your registration code: <span className="text-white">{registrationCode}</span> — keep this for your records.
@@ -646,7 +647,7 @@ export default function RegisterTeam({ data }: { data: any }) {
           <div ref={infoCardsRef} className="flex flex-col gap-4">
             {[
               { icon: "📧", title: "Email", value: contact?.email, sub: "We respond within 24 hours" },
-              { icon: "📞", title: "Phone", value: contact?.phone, sub: "Mon–Fri, 9 AM – 6 PM" },
+              { icon: "📞", title: "Phone", value: contact?.phone, sub: "" },
               { icon: "📍", title: "Address", value: contact?.address, sub: "Green University of Bangladesh" },
             ].map(({ icon, title, value, sub }) => (
               <div key={title}

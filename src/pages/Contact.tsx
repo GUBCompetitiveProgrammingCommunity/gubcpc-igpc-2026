@@ -302,7 +302,7 @@ export default function Contact({ data }: { data: any }) {
           <div ref={infoCardsRef} className="flex flex-col gap-4">
             {[
               { icon: "📧", title: "Email", value: contact?.email, sub: "We respond within 24 hours" },
-              { icon: "📞", title: "Phone", value: contact?.phone, sub: "Mon–Fri, 9 AM – 6 PM" },
+              { icon: "📞", title: "Phone", value: contact?.phone, sub: "" },
               { icon: "📍", title: "Address", value: contact?.address, sub: "Green University of Bangladesh" },
             ].map(({ icon, title, value, sub }) => (
               <div key={title}

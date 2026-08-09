@@ -7,7 +7,7 @@ const port = parseInt(process.env.PORT || "5173", 10);
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    port,
+    port: 3000,
     host: "0.0.0.0",
     strictPort: true,
     allowedHosts: true,
