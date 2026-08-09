@@ -29,7 +29,9 @@ const depts = [
   "Department of Law",
   "Department of Computer Science and Engineering",
   "Department of Electrical and Electronic Engineering",
-  "Department of Textile Engineering"
+  "Department of Textile Engineering",
+  "Department of Software Engineering",
+  "Department of AI and Data Science"
 ];
 
 const paymentMethods = ["bKash", "Nagad", "Rocket"];
