@@ -36,13 +36,14 @@ const depts = [
 ];
 
 const paymentMethods = ["bKash", "Nagad", "Rocket"];
+const tshirtSizes = ["S", "M", "L", "XL", "XXL"];
 
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type FormState = {
   teamName: string;
-  p1Name: string; p1Id: string; p1Phone: string; p1Email: string; p1Dept: string;
-  p2Name: string; p2Id: string; p2Phone: string; p2Email: string; p2Dept: string;
+  p1Name: string; p1Id: string; p1Phone: string; p1Email: string; p1Dept: string; p1TshirtSize: string;
+  p2Name: string; p2Id: string; p2Phone: string; p2Email: string; p2Dept: string; p2TshirtSize: string;
   paymentMethod: string; paymentPhone: string; trxId: string;
 };
 
@@ -60,6 +61,7 @@ const validateForm = (form: FormState) => {
   if (!form.p1Name.trim()) errors.p1Name = "Name is required.";
   if (!form.p1Id.trim()) errors.p1Id = "Student ID is required.";
   if (!form.p1Dept) errors.p1Dept = "Please select a department.";
+  if (!form.p1TshirtSize) errors.p1TshirtSize = "Please select a T-shirt size.";
   if (!form.p1Phone.trim()) errors.p1Phone = "Phone number is required.";
   else if (form.p1Phone.replace(/\D/g, "").length < 10) errors.p1Phone = "Enter a valid phone number (at least 10 digits).";
   if (!form.p1Email.trim()) errors.p1Email = "Email is required.";
@@ -68,6 +70,7 @@ const validateForm = (form: FormState) => {
   if (!form.p2Name.trim()) errors.p2Name = "Name is required.";
   if (!form.p2Id.trim()) errors.p2Id = "Student ID is required.";
   if (!form.p2Dept) errors.p2Dept = "Please select a department.";
+  if (!form.p2TshirtSize) errors.p2TshirtSize = "Please select a T-shirt size.";
   if (!form.p2Phone.trim()) errors.p2Phone = "Phone number is required.";
   else if (form.p2Phone.replace(/\D/g, "").length < 10) errors.p2Phone = "Enter a valid phone number (at least 10 digits).";
   if (!form.p2Email.trim()) errors.p2Email = "Email is required.";
@@ -263,11 +266,13 @@ export default function RegisterTeam({ data }: { data: any }) {
     p1Phone: "",
     p1Email: "",
     p1Dept: "",
+    p1TshirtSize: "",
     p2Name: "",
     p2Id: "",
     p2Phone: "",
     p2Email: "",
     p2Dept: "",
+    p2TshirtSize: "",
     paymentMethod: "",
     paymentPhone: "",
     trxId: ""
@@ -343,8 +348,22 @@ export default function RegisterTeam({ data }: { data: any }) {
       const result = await registerForContest(CONTEST_SLUG, CONTEST_API_KEY, {
         teamName: form.teamName,
         participants: [
-          { name: form.p1Name, studentId: form.p1Id, email: form.p1Email, phone: form.p1Phone, department: form.p1Dept },
-          { name: form.p2Name, studentId: form.p2Id, email: form.p2Email, phone: form.p2Phone, department: form.p2Dept },
+          {
+            name: form.p1Name,
+            studentId: form.p1Id,
+            email: form.p1Email,
+            phone: form.p1Phone,
+            department: form.p1Dept,
+            tshirtSize: form.p1TshirtSize,
+          },
+          {
+            name: form.p2Name,
+            studentId: form.p2Id,
+            email: form.p2Email,
+            phone: form.p2Phone,
+            department: form.p2Dept,
+            tshirtSize: form.p2TshirtSize,
+          },
         ],
         paymentMethod: form.paymentMethod,
         paymentNumber: form.paymentPhone,
@@ -549,6 +568,19 @@ export default function RegisterTeam({ data }: { data: any }) {
                     onFocus={onFocus}
                     onBlur={onBlur}
                   />
+                  <ThemedSelect
+                    label="T-shirt Size"
+                    value={form.p1TshirtSize}
+                    placeholder="Select T-shirt Size"
+                    options={tshirtSizes.map((size) => ({
+                      value: size,
+                      label: size,
+                    }))}
+                    error={fieldErrors.p1TshirtSize}
+                    onChange={(nextValue) => setField("p1TshirtSize", nextValue)}
+                    onFocus={onFocus}
+                    onBlur={onBlur}
+                  />
                   <div>
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Phone Number</label>
                     <input
@@ -619,6 +651,19 @@ export default function RegisterTeam({ data }: { data: any }) {
                     }))}
                     error={fieldErrors.p2Dept}
                     onChange={(nextValue) => setField("p2Dept", nextValue)}
+                    onFocus={onFocus}
+                    onBlur={onBlur}
+                  />
+                  <ThemedSelect
+                    label="T-shirt Size"
+                    value={form.p2TshirtSize}
+                    placeholder="Select T-shirt Size"
+                    options={tshirtSizes.map((size) => ({
+                      value: size,
+                      label: size,
+                    }))}
+                    error={fieldErrors.p2TshirtSize}
+                    onChange={(nextValue) => setField("p2TshirtSize", nextValue)}
                     onFocus={onFocus}
                     onBlur={onBlur}
                   />

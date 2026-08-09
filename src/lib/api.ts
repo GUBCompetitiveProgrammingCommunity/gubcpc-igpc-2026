@@ -8,6 +8,7 @@ export interface ContestParticipant {
   email: string;
   phone: string;
   department: string;
+  tshirtSize: string;
 }
 
 export interface ContestConfig {
