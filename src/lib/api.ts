@@ -20,6 +20,7 @@ export interface ContestConfig {
   minTeamSize: number | null;
   maxTeamSize: number | null;
   requiresPayment: boolean;
+  requiresTshirtSize: boolean;
   paymentInstructions: string | null;
   venue: string | null;
   contestDate: string | null;
@@ -44,11 +45,7 @@ export interface RegisterContestBody {
 
 export interface RegistrationStatusEntry {
   registrationCode: string;
-  teamName: string;
-  status: string;
-  remarks: string | null;
-  createdAt: string;
-  participants: { name: string; role: string; email: string }[];
+  paymentStatus: string;
 }
 
 async function parseJsonOrThrow(res: Response) {
@@ -83,10 +80,13 @@ export async function registerForContest(
 
 export async function getRegistrationStatus(
   slug: string,
-  email: string
-): Promise<RegistrationStatusEntry[]> {
+  params: { email?: string; registrationId?: string }
+): Promise<RegistrationStatusEntry | null> {
+  const searchParams = new URLSearchParams();
+  if (params.email) searchParams.set("email", params.email);
+  if (params.registrationId) searchParams.set("registrationId", params.registrationId);
   const res = await fetch(
-    `${API_BASE_URL}/student/contests/${slug}/status?email=${encodeURIComponent(email)}`
+    `${API_BASE_URL}/student/contests/${slug}/status?${searchParams.toString()}`
   );
   const data = await parseJsonOrThrow(res);
   return data.data;

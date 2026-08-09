@@ -10,6 +10,7 @@ const links = [
   { to: "/about", label: "About", icon: "◈" },
   { to: "/schedule", label: "Schedule", icon: "◆" },
   { to: "/contact", label: "Contact", icon: "◉" },
+  { to: "/registration-status", label: "Registration Status", icon: "◎" },
 ];
 
 export default function Navbar() {

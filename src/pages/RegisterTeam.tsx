@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Swal from "sweetalert2";
-import DOMPurify from "dompurify";
 import { getContest, registerForContest, CONTEST_SLUG, CONTEST_API_KEY, ContestConfig } from "../lib/api";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -36,9 +35,17 @@ const depts = [
 ];
 
 const paymentMethods = ["bKash", "Nagad", "Rocket"];
-const tshirtSizes = ["S", "M", "L", "XL", "XXL"];
+const tshirtSizes = ["S", "M", "L", "XL", "XXL", "XXXL"];
 
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const bdPhoneRe = /^\d{11}$/;
+const studentIdRe = /^\d{9}$/;
+const igpcPaymentDetails = {
+  amount: "349 tk",
+  bkash: "01879597656",
+  rocket: "01879597656",
+  nagad: "01879597656",
+};
 
 type FormState = {
   teamName: string;
@@ -60,19 +67,21 @@ const validateForm = (form: FormState) => {
 
   if (!form.p1Name.trim()) errors.p1Name = "Name is required.";
   if (!form.p1Id.trim()) errors.p1Id = "Student ID is required.";
+  else if (!studentIdRe.test(form.p1Id.trim())) errors.p1Id = "Student ID must be exactly 9 digits.";
   if (!form.p1Dept) errors.p1Dept = "Please select a department.";
   if (!form.p1TshirtSize) errors.p1TshirtSize = "Please select a T-shirt size.";
   if (!form.p1Phone.trim()) errors.p1Phone = "Phone number is required.";
-  else if (form.p1Phone.replace(/\D/g, "").length < 10) errors.p1Phone = "Enter a valid phone number (at least 10 digits).";
+  else if (!bdPhoneRe.test(form.p1Phone.trim())) errors.p1Phone = "Phone number must be exactly 11 digits.";
   if (!form.p1Email.trim()) errors.p1Email = "Email is required.";
   else if (!emailRe.test(form.p1Email.trim())) errors.p1Email = "Enter a valid email address.";
 
   if (!form.p2Name.trim()) errors.p2Name = "Name is required.";
   if (!form.p2Id.trim()) errors.p2Id = "Student ID is required.";
+  else if (!studentIdRe.test(form.p2Id.trim())) errors.p2Id = "Student ID must be exactly 9 digits.";
   if (!form.p2Dept) errors.p2Dept = "Please select a department.";
   if (!form.p2TshirtSize) errors.p2TshirtSize = "Please select a T-shirt size.";
   if (!form.p2Phone.trim()) errors.p2Phone = "Phone number is required.";
-  else if (form.p2Phone.replace(/\D/g, "").length < 10) errors.p2Phone = "Enter a valid phone number (at least 10 digits).";
+  else if (!bdPhoneRe.test(form.p2Phone.trim())) errors.p2Phone = "Phone number must be exactly 11 digits.";
   if (!form.p2Email.trim()) errors.p2Email = "Email is required.";
   else if (!emailRe.test(form.p2Email.trim())) errors.p2Email = "Enter a valid email address.";
 
@@ -94,6 +103,7 @@ const validateForm = (form: FormState) => {
 
   if (!form.paymentMethod) errors.paymentMethod = "Please select a payment method.";
   if (!form.paymentPhone.trim()) errors.paymentPhone = "Payment phone number is required.";
+  else if (!bdPhoneRe.test(form.paymentPhone.trim())) errors.paymentPhone = "Payment number must be exactly 11 digits.";
   if (!form.trxId.trim()) errors.trxId = "Transaction ID is required.";
 
   return errors;
@@ -545,7 +555,7 @@ export default function RegisterTeam({ data }: { data: any }) {
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Student ID</label>
                     <input
                       type="text"
-                      placeholder="Student ID"
+                      placeholder="9-digit student ID"
                       style={fieldStyle(fieldErrors.p1Id)}
                       value={form.p1Id}
                       onChange={e => setField("p1Id", e.target.value)}
@@ -585,7 +595,7 @@ export default function RegisterTeam({ data }: { data: any }) {
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Phone Number</label>
                     <input
                       type="tel"
-                      placeholder="Phone number"
+                      placeholder="01XXXXXXXXX"
                       style={fieldStyle(fieldErrors.p1Phone)}
                       value={form.p1Phone}
                       onChange={e => setField("p1Phone", e.target.value)}
@@ -631,7 +641,7 @@ export default function RegisterTeam({ data }: { data: any }) {
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Student ID</label>
                     <input
                       type="text"
-                      placeholder="Student ID"
+                      placeholder="9-digit student ID"
                       style={fieldStyle(fieldErrors.p2Id)}
                       value={form.p2Id}
                       onChange={e => setField("p2Id", e.target.value)}
@@ -671,7 +681,7 @@ export default function RegisterTeam({ data }: { data: any }) {
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Phone Number</label>
                     <input
                       type="tel"
-                      placeholder="Phone number"
+                      placeholder="01XXXXXXXXX"
                       style={fieldStyle(fieldErrors.p2Phone)}
                       value={form.p2Phone}
                       onChange={e => setField("p2Phone", e.target.value)}
@@ -716,15 +726,28 @@ export default function RegisterTeam({ data }: { data: any }) {
                 </div>
 
                 <div
-                  className="text-xs sm:text-sm text-green-100/85 mb-5 leading-relaxed font-sans p-3 rounded-xl [&_b]:text-green-200 [&_strong]:text-green-200 [&_a]:text-green-300 [&_a]:underline"
-                  style={{ background: "rgba(0,12,3,0.35)", border: "1px solid rgba(74,222,128,0.15)" }}
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(
-                      contest.paymentInstructions ||
-                        "Please complete the registration fee payment via your preferred method (e.g. bKash, Nagad, Rocket, bank transfer), then fill in the details below exactly as used in the transaction."
-                    ),
-                  }}
-                />
+                  className="mb-5 rounded-2xl border border-green-400/20 bg-[rgba(0,12,3,0.45)] p-4 font-sans text-sm text-green-50"
+                  style={{ boxShadow: "inset 0 0 0 1px rgba(34,197,94,0.04)" }}
+                >
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-green-300">Payment Instructions</p>
+                  <p className="mt-3 text-sm leading-relaxed text-green-100/90">
+                    Do Send Money ({igpcPaymentDetails.amount}) via Bkash, Nagad, or Rocket.
+                  </p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-xl border border-green-500/15 bg-green-500/5 p-3">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-green-300">Bkash</p>
+                      <p className="mt-1 text-base font-black text-white">{igpcPaymentDetails.bkash}</p>
+                    </div>
+                    <div className="rounded-xl border border-green-500/15 bg-green-500/5 p-3">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-green-300">Rocket</p>
+                      <p className="mt-1 text-base font-black text-white">{igpcPaymentDetails.rocket}</p>
+                    </div>
+                    <div className="rounded-xl border border-green-500/15 bg-green-500/5 p-3">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-green-300">Nagad</p>
+                      <p className="mt-1 text-base font-black text-white">{igpcPaymentDetails.nagad}</p>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <ThemedSelect
@@ -758,7 +781,7 @@ export default function RegisterTeam({ data }: { data: any }) {
                     <label className="block text-green-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Transaction ID (TrxID)</label>
                     <input
                       type="text"
-                      placeholder="Enter the Transaction ID"
+                      placeholder="Enter the transaction ID"
                       style={fieldStyle(fieldErrors.trxId)}
                       value={form.trxId}
                       onChange={e => setField("trxId", e.target.value)}
@@ -799,6 +822,9 @@ export default function RegisterTeam({ data }: { data: any }) {
                     Your registration code: <span className="text-white">{registrationCode}</span> — keep this for your records.
                   </p>
                 )}
+                <p className="mt-3 text-xs font-sans text-green-100/60">
+                  You can use the Registration Status page to check your payment verification later.
+                </p>
               </div>
               <button
                 onClick={() => setSent(false)}
