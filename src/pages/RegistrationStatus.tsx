@@ -12,9 +12,9 @@ const modeCopy: Record<SearchMode, { label: string; placeholder: string; helper:
     helper: "Use the team leader email address submitted during registration.",
   },
   registrationId: {
-    label: "Registration ID",
-    placeholder: "REG-XXXXXX-XXXXXX",
-    helper: "Use the registration ID you received after submitting the form.",
+    label: "Registration Code / ID",
+    placeholder: "REG-XXXXXX-XXXXXX or numeric ID",
+    helper: "Use the registration code you received after submitting the form, or the numeric ID if you have it.",
   },
 };
 
@@ -40,7 +40,7 @@ export default function RegistrationStatus() {
     setResult(null);
 
     if (!cleanQuery) {
-      setError(`Please enter a ${mode === "email" ? "team leader email" : "registration ID"}.`);
+      setError(`Please enter a ${mode === "email" ? "team leader email" : "registration code or ID"}.`);
       return;
     }
     if (mode === "email" && !emailRe.test(cleanQuery)) {
@@ -78,7 +78,7 @@ export default function RegistrationStatus() {
           <p className="text-xs font-black uppercase tracking-[0.24em] text-green-400">Registration Status</p>
           <h1 className="mt-4 text-3xl font-black text-white sm:text-5xl">Check Your Payment Status</h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-green-100/65 sm:text-base">
-            Search with your team leader email or registration ID. Only the payment status will be shown.
+            Search with your team leader email or registration code/ID. Only the payment status will be shown.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -101,7 +101,7 @@ export default function RegistrationStatus() {
                     border: active ? "1px solid transparent" : "1px solid rgba(34,197,94,0.18)",
                   }}
                 >
-                  {item === "email" ? "Leader Email" : "Registration ID"}
+                  {item === "email" ? "Leader Email" : "Registration Code / ID"}
                 </button>
               );
             })}
