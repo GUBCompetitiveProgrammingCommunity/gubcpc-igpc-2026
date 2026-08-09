@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Swal from "sweetalert2";
+import DOMPurify from "dompurify";
 import { getContest, registerForContest, CONTEST_SLUG, CONTEST_API_KEY, ContestConfig } from "../lib/api";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -238,6 +239,22 @@ export default function RegisterTeam({ data }: { data: any }) {
     border: hasError ? "1px solid rgba(239,68,68,0.55)" : inputStyle.border,
   });
 
+  const chevronIcon =
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234ade80' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E\")";
+
+  const selectStyle = (hasError?: string): React.CSSProperties => ({
+    ...fieldStyle(hasError),
+    appearance: "none",
+    WebkitAppearance: "none",
+    MozAppearance: "none",
+    cursor: "pointer",
+    paddingRight: "42px",
+    backgroundImage: chevronIcon,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 14px center",
+    backgroundSize: "14px",
+  });
+
   const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     e.target.style.borderColor = "rgba(34,197,94,0.45)";
     e.target.style.boxShadow = "0 0 0 3px rgba(34,197,94,0.08)";
@@ -392,15 +409,15 @@ export default function RegisterTeam({ data }: { data: any }) {
                   <div>
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Department</label>
                     <select
-                      style={{ ...fieldStyle(fieldErrors.p1Dept), cursor: "pointer" }}
+                      style={selectStyle(fieldErrors.p1Dept)}
                       value={form.p1Dept}
                       onChange={e => setField("p1Dept", e.target.value)}
                       onFocus={onFocus}
                       onBlur={onBlur}
                     >
-                      <option value="" disabled className="bg-[#050f07]">Select Department</option>
+                      <option value="" disabled style={{ background: "#050f07", color: "#e5f9ee" }}>Select Department</option>
                       {depts.map(d => (
-                        <option key={d} value={d} className="bg-[#050f07]">{d}</option>
+                        <option key={d} value={d} style={{ background: "#050f07", color: "#e5f9ee" }}>{d}</option>
                       ))}
                     </select>
                     <FieldError message={fieldErrors.p1Dept} />
@@ -467,15 +484,15 @@ export default function RegisterTeam({ data }: { data: any }) {
                   <div>
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Department</label>
                     <select
-                      style={{ ...fieldStyle(fieldErrors.p2Dept), cursor: "pointer" }}
+                      style={selectStyle(fieldErrors.p2Dept)}
                       value={form.p2Dept}
                       onChange={e => setField("p2Dept", e.target.value)}
                       onFocus={onFocus}
                       onBlur={onBlur}
                     >
-                      <option value="" disabled className="bg-[#050f07]">Select Department</option>
+                      <option value="" disabled style={{ background: "#050f07", color: "#e5f9ee" }}>Select Department</option>
                       {depts.map(d => (
-                        <option key={d} value={d} className="bg-[#050f07]">{d}</option>
+                        <option key={d} value={d} style={{ background: "#050f07", color: "#e5f9ee" }}>{d}</option>
                       ))}
                     </select>
                     <FieldError message={fieldErrors.p2Dept} />
@@ -526,31 +543,32 @@ export default function RegisterTeam({ data }: { data: any }) {
                     💳
                   </span>
                   <h3 className="text-base font-black text-green-300 uppercase tracking-wider">Registration Fee Payment</h3>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide"
-                    style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.4)", color: "#fca5a5" }}>
-                    Required
-                  </span>
                 </div>
 
-                <p className="text-xs sm:text-sm text-green-100/85 mb-5 leading-relaxed font-sans p-3 rounded-xl"
-                  style={{ background: "rgba(0,12,3,0.35)", border: "1px solid rgba(74,222,128,0.15)" }}>
-                  {contest.paymentInstructions ||
-                    "Please complete the registration fee payment via your preferred method (e.g. bKash, Nagad, Rocket, bank transfer), then fill in the details below exactly as used in the transaction."}
-                </p>
+                <div
+                  className="text-xs sm:text-sm text-green-100/85 mb-5 leading-relaxed font-sans p-3 rounded-xl [&_b]:text-green-200 [&_strong]:text-green-200 [&_a]:text-green-300 [&_a]:underline"
+                  style={{ background: "rgba(0,12,3,0.35)", border: "1px solid rgba(74,222,128,0.15)" }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      contest.paymentInstructions ||
+                        "Please complete the registration fee payment via your preferred method (e.g. bKash, Nagad, Rocket, bank transfer), then fill in the details below exactly as used in the transaction."
+                    ),
+                  }}
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-green-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Payment Method</label>
                     <select
-                      style={{ ...fieldStyle(fieldErrors.paymentMethod), cursor: "pointer" }}
+                      style={selectStyle(fieldErrors.paymentMethod)}
                       value={form.paymentMethod}
                       onChange={e => setField("paymentMethod", e.target.value)}
                       onFocus={onFocus}
                       onBlur={onBlur}
                     >
-                      <option value="" disabled className="bg-[#050f07]">Select Payment Method</option>
+                      <option value="" disabled style={{ background: "#050f07", color: "#e5f9ee" }}>Select Payment Method</option>
                       {paymentMethods.map(m => (
-                        <option key={m} value={m} className="bg-[#050f07]">{m}</option>
+                        <option key={m} value={m} style={{ background: "#050f07", color: "#e5f9ee" }}>{m}</option>
                       ))}
                     </select>
                     <FieldError message={fieldErrors.paymentMethod} />
