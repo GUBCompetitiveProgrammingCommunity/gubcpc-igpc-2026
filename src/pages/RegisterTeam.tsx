@@ -46,6 +46,12 @@ type FormState = {
   paymentMethod: string; paymentPhone: string; trxId: string;
 };
 
+type SelectOption = {
+  value: string;
+  label: string;
+  description?: string;
+};
+
 const validateForm = (form: FormState) => {
   const errors: Partial<Record<keyof FormState, string>> = {};
 
@@ -96,6 +102,139 @@ function FieldError({ message }: { message?: string }) {
     <p style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#fca5a5" }} className="font-sans">
       {message}
     </p>
+  );
+}
+
+function ThemedSelect({
+  label,
+  value,
+  placeholder,
+  options,
+  error,
+  onChange,
+  onFocus,
+  onBlur,
+}: {
+  label: string;
+  value: string;
+  placeholder: string;
+  options: SelectOption[];
+  error?: string;
+  onChange: (value: string) => void;
+  onFocus: React.FocusEventHandler<HTMLButtonElement>;
+  onBlur: React.FocusEventHandler<HTMLButtonElement>;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const activeOption = options.find((option) => option.value === value);
+
+  return (
+    <div ref={rootRef} className="relative ">
+      <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">{label}</label>
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        className="w-full cursor-pointer text-left rounded-xl px-4 py-3.5 pr-12 font-sans text-sm transition-all duration-200 outline-none"
+        style={{
+          background: "linear-gradient(180deg, rgba(3,18,10,0.95), rgba(5,15,7,0.88))",
+          border: error ? "1px solid rgba(239,68,68,0.55)" : "1px solid rgba(34,197,94,0.15)",
+          color: activeOption ? "#f0fdf4" : "rgba(148,163,184,0.9)",
+          boxShadow: open ? "0 0 0 3px rgba(34,197,94,0.08)" : "none",
+          minHeight: 48,
+        }}
+      >
+        <span className="block truncate">{activeOption ? activeOption.label : placeholder}</span>
+        <span
+          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-green-400 transition-transform duration-200"
+          style={{ transform: open ? "translateY(-50%) rotate(180deg)" : "translateY(-50%) rotate(0deg)" }}
+        >
+          ▾
+        </span>
+      </button>
+
+      {open && (
+        <div
+          role="listbox"
+          className="absolute z-50 mt-2 w-full overflow-hidden rounded-2xl border border-green-500/20 shadow-[0_24px_60px_rgba(0,0,0,0.45)] z-180"
+          style={{ background: "linear-gradient(180deg, rgba(4,18,10,0.98), rgba(3,12,7,0.98))" }}
+        >
+          <button
+            type="button"
+            className="group flex w-full items-center justify-between px-4 py-3 text-left text-sm transition-all duration-200 hover:bg-green-500/12 cursor-pointer  hover:shadow-[inset_0_0_0_1px_rgba(74,222,128,0.18)]"
+            style={{ color: "rgba(224, 253, 238, 0.8)" }}
+            onClick={() => {
+              onChange("");
+              setOpen(false);
+            }}
+          >
+            <span className="transition-colors duration-200  group-hover:text-green-100">{placeholder}</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-green-400/70 transition-all duration-200 group-hover:text-green-300 group-hover:translate-x-0.5">Required</span>
+          </button>
+          <div className="h-px bg-green-500/10" />
+          {options.map((option) => {
+            const isActive = option.value === value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="option"
+                aria-selected={isActive}
+                className="group flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition-all duration-200 hover:bg-green-500/12 cursor-pointer  hover:shadow-[inset_0_0_0_1px_rgba(74,222,128,0.18)]"
+                style={{ background: isActive ? "rgba(34,197,94,0.12)" : "transparent" }}
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+              >
+                <span>
+                  <span className="block text-sm font-semibold transition-colors duration-200 group-hover:text-green-100 cursor-pointer" style={{ color: "#f0fdf4" }}>
+                    {option.label}
+                  </span>
+                  {option.description && (
+                    <span className="mt-0.5 block text-[11px] leading-4 text-green-100/55 transition-colors duration-200 group-hover:text-green-100/75">
+                      {option.description}
+                    </span>
+                  )}
+                </span>
+                {isActive ? (
+                  <span className="text-green-400 text-xs font-bold transition-transform duration-200 group-hover:translate-x-0.5">Selected</span>
+                ) : (
+                  <span className="text-green-400/0 text-xs font-bold transition-all duration-200 group-hover:text-green-400/70 group-hover:translate-x-0.5">Select</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <FieldError message={error} />
+    </div>
   );
 }
 
@@ -245,24 +384,11 @@ export default function RegisterTeam({ data }: { data: any }) {
   const chevronIcon =
     "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234ade80' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E\")";
 
-  const selectStyle = (hasError?: string): React.CSSProperties => ({
-    ...fieldStyle(hasError),
-    appearance: "none",
-    WebkitAppearance: "none",
-    MozAppearance: "none",
-    cursor: "pointer",
-    paddingRight: "42px",
-    backgroundImage: chevronIcon,
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "right 14px center",
-    backgroundSize: "14px",
-  });
-
-  const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>) => {
     e.target.style.borderColor = "rgba(34,197,94,0.45)";
     e.target.style.boxShadow = "0 0 0 3px rgba(34,197,94,0.08)";
   };
-  const onBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const onBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>) => {
     e.target.style.borderColor = "rgba(34,197,94,0.15)";
     e.target.style.boxShadow = "none";
   };
@@ -348,7 +474,7 @@ export default function RegisterTeam({ data }: { data: any }) {
               ref={formRef}
               onSubmit={handleSubmit}
               noValidate
-              className="p-8 rounded-3xl flex flex-col gap-6 relative overflow-hidden"
+              className="p-8 rounded-3xl flex flex-col gap-6 relative overflow-visible"
               style={{ background: "rgba(0,18,7,0.8)", border: "1px solid rgba(34,197,94,0.12)" }}
             >
               <div className="absolute inset-x-0 top-0 h-px"
@@ -409,22 +535,20 @@ export default function RegisterTeam({ data }: { data: any }) {
                     />
                     <FieldError message={fieldErrors.p1Id} />
                   </div>
-                  <div>
-                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Department</label>
-                    <select
-                      style={selectStyle(fieldErrors.p1Dept)}
-                      value={form.p1Dept}
-                      onChange={e => setField("p1Dept", e.target.value)}
-                      onFocus={onFocus}
-                      onBlur={onBlur}
-                    >
-                      <option value="" disabled style={{ background: "#050f07", color: "#e5f9ee" }}>Select Department</option>
-                      {depts.map(d => (
-                        <option key={d} value={d} style={{ background: "#050f07", color: "#e5f9ee" }}>{d}</option>
-                      ))}
-                    </select>
-                    <FieldError message={fieldErrors.p1Dept} />
-                  </div>
+                  <ThemedSelect
+                    label="Department"
+                    value={form.p1Dept}
+                    placeholder="Select Department"
+                    options={depts.map((dept) => ({
+                      value: dept,
+                      label: dept,
+                      description: dept === "Other" ? "Any department not listed above" : undefined,
+                    }))}
+                    error={fieldErrors.p1Dept}
+                    onChange={(nextValue) => setField("p1Dept", nextValue)}
+                    onFocus={onFocus}
+                    onBlur={onBlur}
+                  />
                   <div>
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Phone Number</label>
                     <input
@@ -484,22 +608,20 @@ export default function RegisterTeam({ data }: { data: any }) {
                     />
                     <FieldError message={fieldErrors.p2Id} />
                   </div>
-                  <div>
-                    <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Department</label>
-                    <select
-                      style={selectStyle(fieldErrors.p2Dept)}
-                      value={form.p2Dept}
-                      onChange={e => setField("p2Dept", e.target.value)}
-                      onFocus={onFocus}
-                      onBlur={onBlur}
-                    >
-                      <option value="" disabled style={{ background: "#050f07", color: "#e5f9ee" }}>Select Department</option>
-                      {depts.map(d => (
-                        <option key={d} value={d} style={{ background: "#050f07", color: "#e5f9ee" }}>{d}</option>
-                      ))}
-                    </select>
-                    <FieldError message={fieldErrors.p2Dept} />
-                  </div>
+                  <ThemedSelect
+                    label="Department"
+                    value={form.p2Dept}
+                    placeholder="Select Department"
+                    options={depts.map((dept) => ({
+                      value: dept,
+                      label: dept,
+                      description: dept === "Other" ? "Any department not listed above" : undefined,
+                    }))}
+                    error={fieldErrors.p2Dept}
+                    onChange={(nextValue) => setField("p2Dept", nextValue)}
+                    onFocus={onFocus}
+                    onBlur={onBlur}
+                  />
                   <div>
                     <label className="block text-green-500/80 text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Phone Number</label>
                     <input
@@ -530,7 +652,7 @@ export default function RegisterTeam({ data }: { data: any }) {
               </div>
 
               {/* Payment Details - visually highlighted since this step is required before submitting */}
-              <div className="p-5 sm:p-6 rounded-2xl relative overflow-hidden"
+              <div className="p-5 sm:p-6 rounded-2xl relative "
                 style={{
                   background: "linear-gradient(160deg, rgba(34,197,94,0.16), rgba(22,101,52,0.07))",
                   border: "1.5px solid rgba(74,222,128,0.45)",
@@ -560,22 +682,20 @@ export default function RegisterTeam({ data }: { data: any }) {
                 />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-green-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Payment Method</label>
-                    <select
-                      style={selectStyle(fieldErrors.paymentMethod)}
-                      value={form.paymentMethod}
-                      onChange={e => setField("paymentMethod", e.target.value)}
-                      onFocus={onFocus}
-                      onBlur={onBlur}
-                    >
-                      <option value="" disabled style={{ background: "#050f07", color: "#e5f9ee" }}>Select Payment Method</option>
-                      {paymentMethods.map(m => (
-                        <option key={m} value={m} style={{ background: "#050f07", color: "#e5f9ee" }}>{m}</option>
-                      ))}
-                    </select>
-                    <FieldError message={fieldErrors.paymentMethod} />
-                  </div>
+                  <ThemedSelect
+                    label="Payment Method"
+                    value={form.paymentMethod}
+                    placeholder="Select Payment Method"
+                    options={paymentMethods.map((method) => ({
+                      value: method,
+                      label: method,
+                      description: `Pay using ${method}`,
+                    }))}
+                    error={fieldErrors.paymentMethod}
+                    onChange={(nextValue) => setField("paymentMethod", nextValue)}
+                    onFocus={onFocus}
+                    onBlur={onBlur}
+                  />
                   <div>
                     <label className="block text-green-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Payment Phone Number</label>
                     <input
