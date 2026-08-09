@@ -31,7 +31,7 @@ const depts = [
   "Department of Textile Engineering"
 ];
 
-const paymentMethods = ["bKash", "Nagad"];
+const paymentMethods = ["bKash", "Nagad", "Rocket"];
 
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -509,16 +509,38 @@ export default function RegisterTeam({ data }: { data: any }) {
                 </div>
               </div>
 
-              {/* Payment Details */}
-              <div className="p-5 rounded-2xl border border-green-500/20" style={{ background: "rgba(34,197,94,0.03)" }}>
-                <h3 className="text-sm font-black text-green-400 uppercase tracking-wider mb-2">Registration Fee Payment</h3>
-                <p className="text-xs text-green-200/60 mb-4 leading-relaxed font-sans">
-                  {contest.paymentInstructions}
+              {/* Payment Details - visually highlighted since this step is required before submitting */}
+              <div className="p-5 sm:p-6 rounded-2xl relative overflow-hidden"
+                style={{
+                  background: "linear-gradient(160deg, rgba(34,197,94,0.16), rgba(22,101,52,0.07))",
+                  border: "1.5px solid rgba(74,222,128,0.45)",
+                  boxShadow: "0 0 36px rgba(34,197,94,0.1)",
+                }}
+              >
+                <div className="absolute inset-x-0 top-0 h-1"
+                  style={{ background: "linear-gradient(90deg, transparent, #4ade80, transparent)" }} />
+
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0"
+                    style={{ background: "rgba(34,197,94,0.18)", border: "1px solid rgba(74,222,128,0.4)" }}>
+                    💳
+                  </span>
+                  <h3 className="text-base font-black text-green-300 uppercase tracking-wider">Registration Fee Payment</h3>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide"
+                    style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.4)", color: "#fca5a5" }}>
+                    Required
+                  </span>
+                </div>
+
+                <p className="text-xs sm:text-sm text-green-100/85 mb-5 leading-relaxed font-sans p-3 rounded-xl"
+                  style={{ background: "rgba(0,12,3,0.35)", border: "1px solid rgba(74,222,128,0.15)" }}>
+                  {contest.paymentInstructions ||
+                    "Please complete the registration fee payment via your preferred method (e.g. bKash, Nagad, Rocket, bank transfer), then fill in the details below exactly as used in the transaction."}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="sm:col-span-2">
-                    <label className="block text-green-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Payment Method</label>
+                  <div>
+                    <label className="block text-green-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Payment Method</label>
                     <select
                       style={{ ...fieldStyle(fieldErrors.paymentMethod), cursor: "pointer" }}
                       value={form.paymentMethod}
@@ -534,7 +556,7 @@ export default function RegisterTeam({ data }: { data: any }) {
                     <FieldError message={fieldErrors.paymentMethod} />
                   </div>
                   <div>
-                    <label className="block text-green-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Payment Phone Number</label>
+                    <label className="block text-green-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Payment Phone Number</label>
                     <input
                       type="tel"
                       placeholder="e.g. 017XXXXXXXX"
@@ -546,8 +568,8 @@ export default function RegisterTeam({ data }: { data: any }) {
                     />
                     <FieldError message={fieldErrors.paymentPhone} />
                   </div>
-                  <div>
-                    <label className="block text-green-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Transaction ID (TrxID)</label>
+                  <div className="sm:col-span-2">
+                    <label className="block text-green-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Transaction ID (TrxID)</label>
                     <input
                       type="text"
                       placeholder="Enter the Transaction ID"
