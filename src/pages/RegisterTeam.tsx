@@ -40,6 +40,7 @@ const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type FormState = {
   teamName: string;
+  reference: string;
   p1Name: string; p1Id: string; p1Phone: string; p1Email: string; p1Dept: string;
   p2Name: string; p2Id: string; p2Phone: string; p2Email: string; p2Dept: string;
   paymentMethod: string; paymentPhone: string; trxId: string;
@@ -118,6 +119,7 @@ export default function RegisterTeam({ data }: { data: any }) {
 
   const [form, setForm] = useState<FormState>({
     teamName: "",
+    reference: "",
     p1Name: "",
     p1Id: "",
     p1Phone: "",
@@ -202,6 +204,7 @@ export default function RegisterTeam({ data }: { data: any }) {
     try {
       const result = await registerForContest(CONTEST_SLUG, CONTEST_API_KEY, {
         teamName: form.teamName,
+        reference: form.reference.trim() || undefined,
         participants: [
           { name: form.p1Name, studentId: form.p1Id, email: form.p1Email, phone: form.p1Phone, department: form.p1Dept },
           { name: form.p2Name, studentId: form.p2Id, email: form.p2Email, phone: form.p2Phone, department: form.p2Dept },
@@ -376,6 +379,20 @@ export default function RegisterTeam({ data }: { data: any }) {
                   onBlur={onBlur}
                 />
                 <FieldError message={fieldErrors.teamName} />
+              </div>
+
+              <div>
+                <label className="block text-green-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Reference (optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Facebook, a friend, poster, teacher"
+                  style={fieldStyle(fieldErrors.reference)}
+                  value={form.reference}
+                  onChange={e => setField("reference", e.target.value)}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
+                />
+                <FieldError message={fieldErrors.reference} />
               </div>
 
               {/* Participant 1 */}
