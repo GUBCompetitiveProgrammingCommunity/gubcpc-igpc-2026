@@ -37,6 +37,7 @@ export interface ContestConfig {
 
 export interface RegisterContestBody {
   teamName?: string;
+  reference?: string;
   participants: ContestParticipant[];
   paymentMethod?: string;
   paymentNumber?: string;
