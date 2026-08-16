@@ -44,9 +44,37 @@ export interface RegisterContestBody {
   paymentTransactionId?: string;
 }
 
+export interface RegistrationStatusParticipant {
+  id: number;
+  name: string;
+  studentId: string;
+  email: string;
+  phone: string;
+  department: string;
+  tshirtSize: string | null;
+  role: "individual" | "leader" | "member";
+}
+
 export interface RegistrationStatusEntry {
   registrationCode: string;
+  teamName: string | null;
+  reference: string | null;
+  status: string;
   paymentStatus: string;
+  remarks: string | null;
+  createdAt: string;
+  editingEnabled: boolean;
+  paymentMethod: string | null;
+  paymentNumber: string | null;
+  paymentTransactionId: string | null;
+  participants: RegistrationStatusParticipant[];
+}
+
+export interface UpdateOwnRegistrationBody {
+  email: string;
+  otp: string;
+  teamName?: string;
+  participants?: { id: number; name: string; tshirtSize: string }[];
 }
 
 async function parseJsonOrThrow(res: Response) {
@@ -85,9 +113,42 @@ export async function getRegistrationStatus(
 ): Promise<RegistrationStatusEntry | null> {
   const searchParams = new URLSearchParams();
   if (params.email) searchParams.set("email", params.email);
-  if (params.registrationId) searchParams.set("registrationId", params.registrationId);
+  if (params.registrationId) searchParams.set("registrationCode", params.registrationId);
   const res = await fetch(
     `${API_BASE_URL}/student/contests/${slug}/status?${searchParams.toString()}`
+  );
+  const data = await parseJsonOrThrow(res);
+  return data.data;
+}
+
+export async function requestEditOtp(
+  slug: string,
+  registrationCode: string,
+  email: string
+): Promise<{ message: string; sentTo: string }> {
+  const res = await fetch(
+    `${API_BASE_URL}/student/contests/${slug}/registrations/${encodeURIComponent(registrationCode)}/request-edit-otp`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    }
+  );
+  return parseJsonOrThrow(res);
+}
+
+export async function updateOwnRegistration(
+  slug: string,
+  registrationCode: string,
+  body: UpdateOwnRegistrationBody
+): Promise<RegistrationStatusEntry> {
+  const res = await fetch(
+    `${API_BASE_URL}/student/contests/${slug}/registrations/${encodeURIComponent(registrationCode)}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }
   );
   const data = await parseJsonOrThrow(res);
   return data.data;
