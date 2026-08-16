@@ -74,7 +74,9 @@ export interface UpdateOwnRegistrationBody {
   email: string;
   otp: string;
   teamName?: string;
-  participants?: { id: number; name: string; tshirtSize: string }[];
+  leaderTshirtSize?: string;
+  secondMemberEmail?: string;
+  secondMemberTshirtSize?: string;
 }
 
 async function parseJsonOrThrow(res: Response) {

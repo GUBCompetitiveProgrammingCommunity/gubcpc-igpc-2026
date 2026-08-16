@@ -32,10 +32,12 @@ const statusTone: Record<string, string> = {
   Rejected: "rgba(248,113,113,0.18)",
 };
 
-const roleLabel = (role: RegistrationStatusParticipant["role"]) =>
-  role === "leader" ? "Team Leader" : role === "member" ? "Member" : "Entrant";
-
-type EditableParticipant = { id: number; name: string; tshirtSize: string };
+type EditFormState = {
+  teamName: string;
+  leaderTshirtSize: string;
+  secondMemberEmail: string;
+  secondMemberTshirtSize: string;
+};
 
 function ReadOnlyField({ label, value }: { label: string; value: string | null | undefined }) {
   return (
@@ -46,6 +48,29 @@ function ReadOnlyField({ label, value }: { label: string; value: string | null |
   );
 }
 
+function getLeader(participants: RegistrationStatusParticipant[] = []) {
+  return participants.find((p) => p.role === "leader") || participants[0] || null;
+}
+
+function getSecondMember(participants: RegistrationStatusParticipant[] = []) {
+  return participants.find((p) => p.role === "member") || participants[1] || null;
+}
+
+function makeEditForm(result: RegistrationStatusEntry): EditFormState {
+  const leader = getLeader(result.participants);
+  const secondMember = getSecondMember(result.participants);
+  return {
+    teamName: result.teamName || "",
+    leaderTshirtSize: leader?.tshirtSize || "",
+    secondMemberEmail: secondMember?.email || "",
+    secondMemberTshirtSize: secondMember?.tshirtSize || "",
+  };
+}
+
+function normalize(value: string) {
+  return value.trim().toLowerCase();
+}
+
 export default function RegistrationStatus() {
   const [mode, setMode] = useState<SearchMode>("email");
   const [query, setQuery] = useState("");
@@ -53,33 +78,43 @@ export default function RegistrationStatus() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<RegistrationStatusEntry | null>(null);
 
-  const [teamName, setTeamName] = useState("");
-  const [participants, setParticipants] = useState<EditableParticipant[]>([]);
-  const [saveError, setSaveError] = useState("");
-  const [saveSuccess, setSaveSuccess] = useState("");
-
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState<EditFormState | null>(null);
+  const [editError, setEditError] = useState("");
+  const [editSuccess, setEditSuccess] = useState("");
   const [otpStage, setOtpStage] = useState<"idle" | "awaiting">("idle");
   const [otpCode, setOtpCode] = useState("");
   const [otpSentTo, setOtpSentTo] = useState("");
-  const [otpError, setOtpError] = useState("");
-  const [requestingOtp, setRequestingOtp] = useState(false);
+  const [sendingOtp, setSendingOtp] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
   const activeMode = modeCopy[mode];
+  const leader = result ? getLeader(result.participants) : null;
+  const secondMember = result ? getSecondMember(result.participants) : null;
+  const canEdit = !!result?.editingEnabled;
+  const hasPaymentInfo =
+    !!result && (result.paymentMethod || result.paymentNumber || result.paymentTransactionId);
 
   useEffect(() => {
-    if (!result) return;
-    setTeamName(result.teamName || "");
-    setParticipants(
-      result.participants.map((p) => ({ id: p.id, name: p.name, tshirtSize: p.tshirtSize || "" }))
-    );
-    setSaveError("");
-    setSaveSuccess("");
+    if (!result) {
+      setEditOpen(false);
+      setEditForm(null);
+      setEditError("");
+      setEditSuccess("");
+      setOtpStage("idle");
+      setOtpCode("");
+      setOtpSentTo("");
+      setResendCooldown(0);
+      return;
+    }
+
+    setEditOpen(false);
+    setEditForm(makeEditForm(result));
+    setEditError("");
     setOtpStage("idle");
     setOtpCode("");
     setOtpSentTo("");
-    setOtpError("");
     setResendCooldown(0);
   }, [result]);
 
@@ -89,18 +124,18 @@ export default function RegistrationStatus() {
     return () => clearInterval(t);
   }, [resendCooldown]);
 
-  const isDirty =
-    !!result &&
-    (teamName !== (result.teamName || "") ||
-      participants.some((p, idx) => {
-        const orig = result.participants[idx];
-        return !orig || p.name !== orig.name || p.tshirtSize !== (orig.tshirtSize || "");
-      }));
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const cleanQuery = query.trim();
     setError("");
+    setEditOpen(false);
+    setEditForm(null);
+    setEditError("");
+    setEditSuccess("");
+    setOtpStage("idle");
+    setOtpCode("");
+    setOtpSentTo("");
+    setResendCooldown(0);
     setResult(null);
 
     if (!cleanQuery) {
@@ -132,85 +167,117 @@ export default function RegistrationStatus() {
     }
   };
 
-  const getOwnerEmail = () =>
-    (mode === "email" ? query.trim() : "") ||
-    result?.participants.find((p) => p.role === "leader" || p.role === "individual")?.email ||
-    result?.participants[0]?.email ||
-    "";
+  const getOwnerEmail = () => leader?.email || "";
 
-  const validateEdits = () => {
-    const cleanTeamName = teamName.trim();
-    if (result && result.teamName !== null && !cleanTeamName) {
-      return "Team name cannot be empty.";
-    }
-    for (const p of participants) {
-      if (!p.name.trim()) return "Every participant's name is required.";
-    }
-    return "";
-  };
-
-  const handleRequestOtp = async () => {
-    if (!result) return;
-    setSaveError("");
-    setSaveSuccess("");
-    setOtpError("");
-
-    const validationError = validateEdits();
-    if (validationError) {
-      setSaveError(validationError);
+  const startEditFlow = async () => {
+    if (!result || !canEdit) return;
+    const ownerEmail = getOwnerEmail();
+    if (!ownerEmail) {
+      setEditError("Leader email is not available for this registration.");
       return;
     }
 
-    setRequestingOtp(true);
+    if (!editForm) {
+      setEditForm(makeEditForm(result));
+    }
+    setEditError("");
+    setEditSuccess("");
+    setSendingOtp(true);
     try {
-      const res = await requestEditOtp(CONTEST_SLUG, result.registrationCode, getOwnerEmail());
-      setOtpSentTo(res.sentTo);
+      const res = await requestEditOtp(CONTEST_SLUG, result.registrationCode, ownerEmail);
+      setEditOpen(true);
       setOtpStage("awaiting");
       setOtpCode("");
+      setOtpSentTo(res.sentTo);
       setResendCooldown(60);
     } catch (err: any) {
-      setSaveError(err.message || "Unable to send a verification code right now.");
+      setEditError(err.message || "Unable to send a verification code right now.");
+      setEditOpen(false);
+      setOtpStage("idle");
     } finally {
-      setRequestingOtp(false);
+      setSendingOtp(false);
     }
+  };
+
+  const buildUpdatePayload = () => {
+    if (!result) return null;
+    const form = editForm || makeEditForm(result);
+
+    const payload: {
+      email: string;
+      otp: string;
+      teamName?: string;
+      leaderTshirtSize?: string;
+      secondMemberEmail?: string;
+      secondMemberTshirtSize?: string;
+    } = {
+      email: getOwnerEmail(),
+      otp: otpCode.trim(),
+    };
+
+    const originalTeamName = result.teamName || "";
+    const cleanTeamName = form.teamName.trim();
+    if (cleanTeamName && cleanTeamName !== originalTeamName) {
+      payload.teamName = cleanTeamName;
+    }
+
+    const originalLeaderTshirtSize = leader?.tshirtSize || "";
+    const cleanLeaderTshirtSize = form.leaderTshirtSize.trim();
+    if (cleanLeaderTshirtSize && cleanLeaderTshirtSize !== originalLeaderTshirtSize) {
+      payload.leaderTshirtSize = cleanLeaderTshirtSize;
+    }
+
+    const originalSecondMemberEmail = secondMember?.email || "";
+    const cleanSecondMemberEmail = form.secondMemberEmail.trim();
+    if (cleanSecondMemberEmail && normalize(cleanSecondMemberEmail) !== normalize(originalSecondMemberEmail)) {
+      payload.secondMemberEmail = cleanSecondMemberEmail;
+    }
+
+    const originalSecondMemberTshirtSize = secondMember?.tshirtSize || "";
+    const cleanSecondMemberTshirtSize = form.secondMemberTshirtSize.trim();
+    if (cleanSecondMemberTshirtSize && cleanSecondMemberTshirtSize !== originalSecondMemberTshirtSize) {
+      payload.secondMemberTshirtSize = cleanSecondMemberTshirtSize;
+    }
+
+    return payload;
   };
 
   const handleConfirmSave = async () => {
-    if (!result) return;
-    setOtpError("");
+    if (!result || !editForm) return;
+    setEditError("");
+    setEditSuccess("");
 
     const cleanOtp = otpCode.trim();
     if (!cleanOtp) {
-      setOtpError("Please enter the verification code.");
+      setEditError("Please enter the verification code.");
       return;
     }
 
-    const validationError = validateEdits();
-    if (validationError) {
-      setOtpError(validationError);
+    const payload = buildUpdatePayload();
+    if (!payload) {
+      setEditError("Unable to prepare the update request.");
+      return;
+    }
+    if (!payload.teamName && !payload.leaderTshirtSize && !payload.secondMemberEmail && !payload.secondMemberTshirtSize) {
+      setEditError("Please change at least one editable field before saving.");
       return;
     }
 
-    const cleanTeamName = teamName.trim();
     setConfirming(true);
     try {
-      const updated = await updateOwnRegistration(CONTEST_SLUG, result.registrationCode, {
-        email: getOwnerEmail(),
-        otp: cleanOtp,
-        ...(result.teamName !== null ? { teamName: cleanTeamName } : {}),
-        participants: participants.map((p) => ({ id: p.id, name: p.name.trim(), tshirtSize: p.tshirtSize })),
-      });
+      const updated = await updateOwnRegistration(CONTEST_SLUG, result.registrationCode, payload);
       setResult(updated);
-      setSaveSuccess("Your details have been updated successfully.");
+      setEditSuccess("Your registration information has been updated successfully.");
+      setEditOpen(false);
+      setOtpStage("idle");
+      setOtpCode("");
+      setOtpSentTo("");
     } catch (err: any) {
-      setOtpError(err.message || "Unable to verify that code. Please try again.");
+      setEditError(err.message || "Unable to verify that code. Please try again.");
     } finally {
       setConfirming(false);
     }
   };
-
-  const hasPaymentInfo =
-    !!result && (result.paymentMethod || result.paymentNumber || result.paymentTransactionId);
 
   return (
     <main className="pt-24 pb-24 px-6">
@@ -222,8 +289,8 @@ export default function RegistrationStatus() {
           <p className="text-xs font-black uppercase tracking-[0.24em] text-green-400">Registration Status</p>
           <h1 className="mt-4 text-3xl font-black text-white sm:text-5xl">Check Your Registration</h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-green-100/65 sm:text-base">
-            Search with your team leader email or registration code/ID to view your payment status, team, and
-            participant details.
+            Search with your team leader email or registration code/ID to view your team information and payment
+            status.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -237,6 +304,14 @@ export default function RegistrationStatus() {
                     setMode(item);
                     setQuery("");
                     setError("");
+                    setEditOpen(false);
+                    setEditForm(null);
+                    setEditError("");
+                    setEditSuccess("");
+                    setOtpStage("idle");
+                    setOtpCode("");
+                    setOtpSentTo("");
+                    setResendCooldown(0);
                     setResult(null);
                   }}
                   className="rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.16em] transition-all"
@@ -300,199 +375,175 @@ export default function RegistrationStatus() {
                   {result.paymentStatus}
                 </span>
               </div>
-              <p className="text-xs text-green-100/45">
-                Registration ID: <span className="font-mono text-green-200">{result.registrationCode}</span>
-              </p>
+
+              <button
+                type="button"
+                onClick={startEditFlow}
+                disabled={!canEdit || sendingOtp}
+                className="rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-[0.16em] text-black transition-all hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+                style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)" }}
+              >
+                {sendingOtp ? "Sending OTP..." : "Edit Info"}
+              </button>
             </div>
 
-            {hasPaymentInfo ? (
-              <div className="rounded-2xl border border-green-500/10 bg-black/20 p-5">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-green-300">
-                  Payment Details <span className="text-green-100/40 normal-case tracking-normal">(cannot be changed)</span>
-                </p>
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                  <ReadOnlyField label="Method" value={result.paymentMethod} />
-                  <ReadOnlyField label="Sender Number" value={result.paymentNumber} />
-                  <ReadOnlyField label="Transaction ID" value={result.paymentTransactionId} />
-                </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <ReadOnlyField label="Team Name" value={result.teamName} />
+              <ReadOnlyField label="Leader Name" value={leader?.name} />
+              <ReadOnlyField label="Leader Email" value={leader?.email} />
+              <ReadOnlyField label="Leader T-shirt Size" value={leader?.tshirtSize} />
+              <ReadOnlyField label="Second Member Name" value={secondMember?.name} />
+              <ReadOnlyField label="Second Member Email" value={secondMember?.email} />
+              <ReadOnlyField label="Second Member T-shirt Size" value={secondMember?.tshirtSize} />
+            </div>
+
+            {!canEdit ? (
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-green-100/70">
+                Editing is currently locked by the organizers.
               </div>
             ) : null}
 
-            <div className="rounded-2xl border border-green-500/10 bg-black/20 p-5">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-green-300">Team &amp; Participant Details</p>
-                {result.editingEnabled ? (
-                  <span className="rounded-full border border-green-400/25 bg-green-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-green-300">
-                    Editing Unlocked
-                  </span>
-                ) : (
-                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-green-100/50">
-                    Locked
-                  </span>
-                )}
+            {editSuccess ? (
+              <div className="rounded-2xl border border-green-400/25 bg-green-500/8 px-4 py-3 text-sm font-semibold text-green-200">
+                {editSuccess}
               </div>
+            ) : null}
 
-              {!result.editingEnabled ? (
-                <p className="mt-3 text-xs text-green-100/45">
-                  Editing is currently locked by the organizers. Contact them if you need to change any details.
+            {editOpen && editForm ? (
+              <div className="rounded-2xl border border-green-500/10 bg-black/20 p-5">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-green-300">Edit Info</p>
+                <p className="mt-2 text-sm text-green-100/65">
+                  An OTP was sent to <span className="font-semibold text-green-300">{otpSentTo}</span>. Leave any
+                  field unchanged if you do not want to update it.
                 </p>
-              ) : null}
 
-              {result.teamName !== null ? (
-                <div className="mt-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-green-300/70">Team Name</p>
-                  {result.editingEnabled ? (
+                <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="sm:col-span-2">
+                    <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-green-300/70">
+                      Team Name
+                    </label>
                     <input
                       type="text"
-                      value={teamName}
-                      onChange={(e) => setTeamName(e.target.value)}
+                      value={editForm.teamName}
+                      onChange={(e) => setEditForm((prev) => (prev ? { ...prev, teamName: e.target.value } : prev))}
                       className="mt-1 w-full rounded-xl border border-green-500/15 bg-[rgba(0,20,8,0.88)] px-3 py-2.5 text-sm text-white outline-none focus:border-green-400/40"
                     />
-                  ) : (
-                    <p className="mt-1 text-sm text-white/90">{result.teamName || "—"}</p>
-                  )}
-                </div>
-              ) : null}
+                  </div>
 
-              <div className="mt-5 space-y-4">
-                {participants.map((editable, idx) => {
-                  const original = result.participants[idx];
-                  if (!original) return null;
-                  return (
-                    <div key={original.id} className="rounded-xl border border-green-500/10 bg-black/25 p-4">
-                      <p className="mb-3 text-xs font-black uppercase tracking-wide text-green-300/80">
-                        {roleLabel(original.role)}
-                      </p>
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-green-300/70">Name</p>
-                          {result.editingEnabled ? (
-                            <input
-                              type="text"
-                              value={editable.name}
-                              onChange={(e) =>
-                                setParticipants((prev) =>
-                                  prev.map((p, i) => (i === idx ? { ...p, name: e.target.value } : p))
-                                )
-                              }
-                              className="mt-1 w-full rounded-xl border border-green-500/15 bg-[rgba(0,20,8,0.88)] px-3 py-2.5 text-sm text-white outline-none focus:border-green-400/40"
-                            />
-                          ) : (
-                            <p className="mt-1 text-sm text-white/90">{original.name}</p>
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-green-300/70">T-shirt Size</p>
-                          {result.editingEnabled ? (
-                            <select
-                              value={editable.tshirtSize}
-                              onChange={(e) =>
-                                setParticipants((prev) =>
-                                  prev.map((p, i) => (i === idx ? { ...p, tshirtSize: e.target.value } : p))
-                                )
-                              }
-                              className="mt-1 w-full rounded-xl border border-green-500/15 bg-[rgba(0,20,8,0.88)] px-3 py-2.5 text-sm text-white outline-none focus:border-green-400/40"
-                            >
-                              <option value="">Select size</option>
-                              {tshirtSizes.map((size) => (
-                                <option key={size} value={size}>
-                                  {size}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            <p className="mt-1 text-sm text-white/90">{original.tshirtSize || "—"}</p>
-                          )}
-                        </div>
-                        <ReadOnlyField label="Student ID" value={original.studentId} />
-                        <ReadOnlyField label="Email" value={original.email} />
-                        <ReadOnlyField label="Phone" value={original.phone} />
-                        <ReadOnlyField label="Department" value={original.department} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {result.editingEnabled ? (
-                <div className="mt-5">
-                  {saveError ? (
-                    <div className="mb-3 rounded-xl border border-red-400/25 bg-red-500/8 px-4 py-3 text-sm font-semibold text-red-200">
-                      {saveError}
-                    </div>
-                  ) : null}
-                  {saveSuccess ? (
-                    <div className="mb-3 rounded-xl border border-green-400/25 bg-green-500/8 px-4 py-3 text-sm font-semibold text-green-200">
-                      {saveSuccess}
-                    </div>
-                  ) : null}
-
-                  {otpStage === "idle" ? (
-                    <button
-                      type="button"
-                      onClick={handleRequestOtp}
-                      disabled={!isDirty || requestingOtp}
-                      className="rounded-full px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-black transition-all hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
-                      style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)" }}
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-green-300/70">
+                      Leader T-shirt Size
+                    </label>
+                    <select
+                      value={editForm.leaderTshirtSize}
+                      onChange={(e) =>
+                        setEditForm((prev) => (prev ? { ...prev, leaderTshirtSize: e.target.value } : prev))
+                      }
+                      className="mt-1 w-full rounded-xl border border-green-500/15 bg-[rgba(0,20,8,0.88)] px-3 py-2.5 text-sm text-white outline-none focus:border-green-400/40"
                     >
-                      {requestingOtp ? "Sending code..." : "Save Changes"}
-                    </button>
-                  ) : (
-                    <div className="rounded-xl border border-green-500/15 bg-black/25 p-4">
-                      <p className="text-sm text-white/85">
-                        A 6-digit verification code was sent to{" "}
-                        <span className="font-semibold text-green-300">{otpSentTo}</span>. Enter it below to
-                        confirm and save your changes.
-                      </p>
-                      <div className="mt-3 flex flex-wrap items-center gap-3">
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          maxLength={6}
-                          value={otpCode}
-                          onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ""))}
-                          placeholder="123456"
-                          className="w-36 rounded-xl border border-green-500/15 bg-[rgba(0,20,8,0.88)] px-4 py-2.5 text-center text-lg font-black tracking-[0.3em] text-white outline-none focus:border-green-400/40"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleConfirmSave}
-                          disabled={confirming || !otpCode.trim()}
-                          className="rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-[0.16em] text-black transition-all hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
-                          style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)" }}
-                        >
-                          {confirming ? "Confirming..." : "Confirm & Save"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleRequestOtp}
-                          disabled={resendCooldown > 0 || requestingOtp}
-                          className="rounded-full border border-green-500/20 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-green-200 transition-all hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {resendCooldown > 0 ? `Resend (${resendCooldown}s)` : "Resend Code"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setOtpStage("idle");
-                            setOtpCode("");
-                            setOtpError("");
-                          }}
-                          className="text-xs font-bold uppercase tracking-[0.14em] text-green-100/50 hover:text-green-100/80"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                      {otpError ? (
-                        <div className="mt-3 rounded-xl border border-red-400/25 bg-red-500/8 px-4 py-3 text-sm font-semibold text-red-200">
-                          {otpError}
-                        </div>
-                      ) : null}
-                    </div>
-                  )}
+                      <option value="">Keep current size</option>
+                      {tshirtSizes.map((size) => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-green-300/70">
+                      Second Member Email
+                    </label>
+                    <input
+                      type="email"
+                      value={editForm.secondMemberEmail}
+                      onChange={(e) =>
+                        setEditForm((prev) => (prev ? { ...prev, secondMemberEmail: e.target.value } : prev))
+                      }
+                      className="mt-1 w-full rounded-xl border border-green-500/15 bg-[rgba(0,20,8,0.88)] px-3 py-2.5 text-sm text-white outline-none focus:border-green-400/40"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-green-300/70">
+                      Second Member T-shirt Size
+                    </label>
+                    <select
+                      value={editForm.secondMemberTshirtSize}
+                      onChange={(e) =>
+                        setEditForm((prev) =>
+                          prev ? { ...prev, secondMemberTshirtSize: e.target.value } : prev
+                        )
+                      }
+                      className="mt-1 w-full rounded-xl border border-green-500/15 bg-[rgba(0,20,8,0.88)] px-3 py-2.5 text-sm text-white outline-none focus:border-green-400/40"
+                    >
+                      <option value="">Keep current size</option>
+                      {tshirtSizes.map((size) => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              ) : null}
-            </div>
+
+                {editError ? (
+                  <div className="mt-4 rounded-2xl border border-red-400/25 bg-red-500/8 px-4 py-3 text-sm font-semibold text-red-200">
+                    {editError}
+                  </div>
+                ) : null}
+
+                {otpStage === "awaiting" ? (
+                  <div className="mt-5 rounded-2xl border border-green-500/15 bg-black/25 p-4">
+                    <p className="text-sm text-white/85">
+                      Enter the 6-digit code sent to{" "}
+                      <span className="font-semibold text-green-300">{otpSentTo}</span> to save the changes.
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ""))}
+                        placeholder="123456"
+                        className="w-36 rounded-xl border border-green-500/15 bg-[rgba(0,20,8,0.88)] px-4 py-2.5 text-center text-lg font-black tracking-[0.3em] text-white outline-none focus:border-green-400/40"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleConfirmSave}
+                        disabled={confirming || !otpCode.trim()}
+                        className="rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-[0.16em] text-black transition-all hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+                        style={{ background: "linear-gradient(135deg, #22c55e, #16a34a)" }}
+                      >
+                        {confirming ? "Saving..." : "Confirm & Save"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={startEditFlow}
+                        disabled={resendCooldown > 0 || sendingOtp}
+                        className="rounded-full border border-green-500/20 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-green-200 transition-all hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {resendCooldown > 0 ? `Resend (${resendCooldown}s)` : "Resend OTP"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditOpen(false);
+                          setOtpStage("idle");
+                          setOtpCode("");
+                          setOtpSentTo("");
+                          setEditError("");
+                        }}
+                        className="text-xs font-bold uppercase tracking-[0.14em] text-green-100/50 hover:text-green-100/80"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
             {result.remarks ? (
               <div className="rounded-2xl border border-green-500/10 bg-black/20 p-5">
